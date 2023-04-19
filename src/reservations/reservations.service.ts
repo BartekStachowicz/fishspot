@@ -10,8 +10,8 @@ export class ReservationsService {
 
   async createNewReservations(lakeName: string, reservation: Reservation) {
     const lakeForUpdate = await this.manageReservations(lakeName, reservation);
-    const updatedLake = await this.lakeService.updateLake(lakeForUpdate);
-    return updatedLake;
+    await this.lakeService.updateLake(lakeForUpdate);
+    return reservation;
   }
 
   private async manageReservations(
