@@ -1,13 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Lake, LakeOuput } from './lake.model';
+import { Lake, LakeOutput } from './lake.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { resourceLimits } from 'worker_threads';
+import { SpotsOutput } from 'src/spots/spots.model';
 
 @Injectable()
 export class LakeService {
   constructor(@InjectModel('Ocieka') private readonly lakeModel: Model<Lake>) {}
 
-  async createNewLake(lake: Lake): Promise<LakeOuput | null> {
+  async createNewLake(lake: Lake): Promise<Lake | null> {
     const lakeName = lake.name.toLowerCase().split(' ').join('-');
 
     const isUnique = await this.hasUniqueName(lakeName);
@@ -17,38 +19,47 @@ export class LakeService {
     const newLake = new this.lakeModel({ ...lake, name: lakeName });
     newLake.save();
 
-    return {
-      id: newLake._id,
-      name: lakeName,
-      spots: newLake.spots,
-    };
+    return newLake;
   }
 
-  async updateLake(lake: Lake): Promise<LakeOuput | null> {
+  async updateLake(lake: Lake): Promise<void> {
     const lakeForUpdate = await this.findByName(lake.name);
 
-    lakeForUpdate.name = lake?.name || lakeForUpdate.name;
+    lakeForUpdate.name =
+      lake?.name.toLowerCase().split(' ').join('-') || lakeForUpdate.name;
     lakeForUpdate.spots = lake?.spots || lakeForUpdate.spots;
 
     lakeForUpdate.save();
-
-    return {
-      id: lake._id,
-      name: lake.name,
-      spots: lake.spots,
-    };
   }
 
-  async getLake(lakeName: string): Promise<LakeOuput | null> {
+  async getLake(lakeName: string): Promise<LakeOutput | null> {
     try {
       const lake = await this.findByName(lakeName);
+
+      const currentYear = String(new Date().getFullYear());
+
+      const spotsMaped: SpotsOutput[] = lake.spots.map((spot) => ({
+        number: spot.number,
+        reservations: spot?.reservations
+          ? spot?.reservations[currentYear] || []
+          : [],
+        unavailableDates: spot?.unavailableDates
+          ? spot?.unavailableDates[currentYear] || []
+          : [],
+        info: spot.info,
+      }));
+
       return {
         id: lake._id,
         name: lake.name,
-        spots: lake.spots,
+        spots: spotsMaped,
       };
     } catch (error) {
-      throw new HttpException('Lake not found!', HttpStatus.NOT_FOUND);
+      console.log(error);
+      throw new HttpException(
+        'Lake not found! Cannot get lake info!',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 

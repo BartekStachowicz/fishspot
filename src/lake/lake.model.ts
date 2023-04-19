@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { Spots } from '../spots/spots.model';
+import { Spots, SpotsOutput } from '../spots/spots.model';
 
 export const LakeSchema = new mongoose.Schema({
   name: { type: String, require: true },
@@ -11,8 +11,8 @@ export interface Lake extends mongoose.Document {
   spots: Spots[];
 }
 
-export interface LakeOuput {
+export interface LakeOutput {
   id: string;
   name: string;
-  spots: Spots[];
+  spots: SpotsOutput[];
 }

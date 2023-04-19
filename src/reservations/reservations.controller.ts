@@ -1,6 +1,6 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
-import { Reservation } from './reservations.model';
+import { Reservation, ReservationData } from './reservations.model';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -9,8 +9,8 @@ export class ReservationsController {
   @Post(':lakename')
   async createNewLake(
     @Param('lakename') lakeName: string,
-    @Body() reservation: Reservation,
-  ): Promise<Reservation | null> {
+    @Body() reservation: ReservationData,
+  ): Promise<ReservationData | null> {
     await this.reservationsService.createNewReservations(lakeName, reservation);
     return reservation;
   }
