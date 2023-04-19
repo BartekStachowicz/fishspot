@@ -11,13 +11,7 @@ export class ReservationsController {
     @Param('lakename') lakeName: string,
     @Body() reservation: Reservation,
   ): Promise<Reservation | null> {
-    console.log(lakeName);
-    console.log(reservation);
-    const reservationOutput =
-      await this.reservationsService.createNewReservations(
-        lakeName,
-        reservation,
-      );
-    return reservationOutput;
+    await this.reservationsService.createNewReservations(lakeName, reservation);
+    return reservation;
   }
 }
