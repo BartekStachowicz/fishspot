@@ -36,7 +36,10 @@ export class ReservationsService {
               confirmed: reservation.confirmed,
               rejected: reservation.rejected,
             };
-            lakeForUpdate.spots[j].unavailableDates = reservation.data[i].dates;
+            lakeForUpdate.spots[j].unavailableDates = [
+              ...lakeForUpdate.spots[j].unavailableDates,
+              ...reservation.data[i].dates,
+            ];
             lakeForUpdate.spots[j].reservations.push(newReservation);
           }
         }
