@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Lake, LakeOutput } from './lake.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { resourceLimits } from 'worker_threads';
 import { SpotsOutput } from 'src/spots/spots.model';
 
 @Injectable()
@@ -28,6 +27,8 @@ export class LakeService {
     lakeForUpdate.name =
       lake?.name.toLowerCase().split(' ').join('-') || lakeForUpdate.name;
     lakeForUpdate.spots = lake?.spots || lakeForUpdate.spots;
+    lakeForUpdate.reservations =
+      lake?.reservations || lakeForUpdate.reservations;
 
     lakeForUpdate.save();
   }
@@ -36,13 +37,10 @@ export class LakeService {
     try {
       const lake = await this.findByName(lakeName);
 
-      const currentYear = String(new Date().getFullYear());
+      const currentYear = this.getCurrentYear();
 
       const spotsMaped: SpotsOutput[] = lake.spots.map((spot) => ({
         number: spot.number,
-        reservations: spot?.reservations
-          ? spot?.reservations[currentYear] || []
-          : [],
         unavailableDates: spot?.unavailableDates
           ? spot?.unavailableDates[currentYear] || []
           : [],
@@ -76,5 +74,20 @@ export class LakeService {
     } catch {
       throw new HttpException('Lake not found!', HttpStatus.NOT_FOUND);
     }
+  }
+
+  private getCurrentYear(): string {
+    return String(new Date().getFullYear());
+  }
+
+  private getYearFromID(id: string): string {
+    const timestamp = id.split('.')[1];
+    const year = this.dateConverter(timestamp);
+    return year;
+  }
+
+  private dateConverter(timestamp: string) {
+    const date: Date = new Date(+timestamp * 1000);
+    return String(date.getFullYear());
   }
 }

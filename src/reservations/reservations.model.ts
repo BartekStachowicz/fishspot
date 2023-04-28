@@ -3,6 +3,7 @@ export interface Reservation {
 }
 
 export interface ReservationData {
+  id: string;
   fullName: string;
   phone: string;
   email: string;

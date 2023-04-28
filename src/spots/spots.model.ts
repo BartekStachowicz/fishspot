@@ -1,11 +1,7 @@
-import {
-  Reservation,
-  ReservationData,
-} from '../reservations/reservations.model';
+import { ReservationData } from '../reservations/reservations.model';
 
 export interface Spots {
   number: number;
-  reservations: Reservation;
   unavailableDates: {
     [year: string]: string[];
   };
@@ -30,7 +26,11 @@ export interface HouseSpot {
 
 export interface SpotsOutput {
   number: number;
-  reservations: ReservationData[];
   unavailableDates: string[];
   info: SpotsInfo;
+}
+
+export interface SpotsOutputWithReservations {
+  number: number;
+  reservations: ReservationData[];
 }
