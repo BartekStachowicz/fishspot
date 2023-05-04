@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
-import { SpotsOutputWithReservations } from '../spots/spots.model';
 
 @Injectable()
 export class ReservationsService {
@@ -90,30 +89,23 @@ export class ReservationsService {
     spotId: string,
     offset: number,
     limit: number,
-  ): Promise<SpotsOutputWithReservations> {
+  ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const currentYear = this.getCurrentYear();
     const reservations = lake.reservations[currentYear];
-    const spotsWithReservations: SpotsOutputWithReservations = {
-      spotId: spotId,
-      reservations: [],
-    };
+    const spotsWithReservations: ReservationData[] = [];
 
     reservations.forEach((reservation) => {
       reservation.data.forEach((el) => {
         if (el.spotId === spotId) {
-          spotsWithReservations.spotId = spotId;
-          spotsWithReservations.reservations
+          spotsWithReservations
             .sort((a, b) => +a.timestamp - +b.timestamp)
             .push(reservation);
         }
       });
     });
 
-    spotsWithReservations.reservations =
-      spotsWithReservations.reservations.slice(offset, offset + limit);
-
-    return spotsWithReservations;
+    return spotsWithReservations.slice(offset, offset + limit);
   }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {

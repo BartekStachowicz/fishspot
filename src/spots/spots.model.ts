@@ -32,8 +32,3 @@ export interface SpotsOutput {
   unavailableDates: string[];
   info: SpotsInfo;
 }
-
-export interface SpotsOutputWithReservations {
-  spotId: string;
-  reservations: ReservationData[];
-}

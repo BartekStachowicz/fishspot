@@ -10,7 +10,6 @@ import {
 
 import { ReservationsService } from './reservations.service';
 import { ReservationData } from './reservations.model';
-import { SpotsOutputWithReservations } from '../spots/spots.model';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -88,7 +87,7 @@ export class ReservationsController {
     @Query('limit') limit: number,
     @Param('lakename') lakeName: string,
     @Param('spotId') spotId: string,
-  ): Promise<SpotsOutputWithReservations> {
+  ): Promise<ReservationData[]> {
     const reservations =
       await this.reservationsService.getReservationsBySpotsId(
         lakeName,

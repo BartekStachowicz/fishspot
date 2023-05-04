@@ -7,7 +7,7 @@ import { LakeService } from '../lake/lake.service';
 export class SpotsService {
   constructor(private lakeService: LakeService) {}
 
-  async addUniqueIDtospots(lakeName: string) {
+  async regenerateSpotId(lakeName: string) {
     const lake = await this.lakeService.findByName(lakeName);
 
     lake.spots.map((spot) => {

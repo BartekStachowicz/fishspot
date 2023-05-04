@@ -6,8 +6,8 @@ import { SpotsService } from './spots.service';
 export class SpotsController {
   constructor(private spotsService: SpotsService) {}
 
-  @Post(':lakename')
-  async createNewReservation(@Param('lakename') lakeName: string) {
-    await this.spotsService.addUniqueIDtospots(lakeName);
+  @Post('regenerate-spotid/:lakename')
+  async regenerateSpotId(@Param('lakename') lakeName: string) {
+    await this.spotsService.regenerateSpotId(lakeName);
   }
 }
