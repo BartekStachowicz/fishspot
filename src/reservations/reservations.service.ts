@@ -98,14 +98,15 @@ export class ReservationsService {
     reservations.forEach((reservation) => {
       reservation.data.forEach((el) => {
         if (el.spotId === spotId) {
-          spotsWithReservations
-            .sort((a, b) => +a.timestamp - +b.timestamp)
-            .push(reservation);
+          spotsWithReservations.push(reservation);
         }
       });
     });
 
-    return spotsWithReservations.slice(offset, offset + limit);
+    return spotsWithReservations
+      .filter((reservation) => reservation.confirmed)
+      .sort((a, b) => +a.timestamp - +b.timestamp)
+      .slice(offset, offset + limit);
   }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
