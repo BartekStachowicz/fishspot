@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { PassportModule } from '@nestjs/passport';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ReservationsModule } from './reservations/reservations.module';
 import { SpotsModule } from './spots/spots.module';
 import { LakeModule } from './lake/lake.module';
+import { MailModule } from './mail/mail.module';
 
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
 const MONGO_DB_USER = process.env.MONGO_DB_USER;
@@ -28,6 +32,24 @@ const MONGO_DB_DATABASE = process.env.MONGO_DB_DATABASE;
     SpotsModule,
 
     LakeModule,
+
+    MailModule,
+
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: 'smtps://user@domain.com:pass@smtp.domain.com',
+        defaults: {
+          from: '"nest-modules" <modules@nestjs.com>',
+        },
+        template: {
+          dir: __dirname + '/templates',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
