@@ -9,7 +9,7 @@ export interface ReservationData {
   email: string;
   data: {
     dates: string[];
-    spot: number;
+    spotId: string;
   }[];
   timestamp: string;
   confirmed: boolean;

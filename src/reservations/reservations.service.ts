@@ -66,7 +66,7 @@ export class ReservationsService {
     const currentYear = this.getCurrentYear();
     const reservations = lake.reservations[currentYear]
       .filter((reservation) => !reservation.confirmed)
-      .sort((a, b) => +b.timestamp - +a.timestamp)
+      .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
     return reservations;
   }
@@ -80,14 +80,14 @@ export class ReservationsService {
     const lake = await this.lakeService.findByName(lakeName);
     const reservations = lake.reservations[year]
       .filter((reservation) => reservation.confirmed)
-      .sort((a, b) => +b.timestamp - +a.timestamp)
+      .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
     return reservations;
   }
 
   async getReservationsBySpots(
     lakeName: string,
-    spot: number,
+    spotId: string,
     offset: number,
     limit: number,
   ): Promise<SpotsOutputWithReservations> {
@@ -95,15 +95,17 @@ export class ReservationsService {
     const currentYear = this.getCurrentYear();
     const reservations = lake.reservations[currentYear];
     const spotsWithReservations: SpotsOutputWithReservations = {
-      number: spot,
+      spotId: spotId,
       reservations: [],
     };
 
     reservations.forEach((reservation) => {
       reservation.data.forEach((el) => {
-        if (el.spot === spot) {
-          spotsWithReservations.number = spot;
-          spotsWithReservations.reservations.push(reservation);
+        if (el.spotId === spotId) {
+          spotsWithReservations.spotId = spotId;
+          spotsWithReservations.reservations
+            .sort((a, b) => +a.timestamp - +b.timestamp)
+            .push(reservation);
         }
       });
     });
@@ -121,11 +123,11 @@ export class ReservationsService {
     lake.reservations[year] = lake.reservations[year].filter(
       (el) => el.id !== id,
     );
-    data.forEach(({ dates, spot }) => {
-      const spotToUpdate = lake.spots.find((s) => s.number === spot);
+    data.forEach(({ dates, spotId }) => {
+      const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
       if (spotToUpdate && spotToUpdate.unavailableDates) {
         Object.keys(spotToUpdate.unavailableDates).forEach((year) => {
-          lake.spots.find((s) => s.number === spot).unavailableDates[year] =
+          lake.spots.find((s) => s.spotId === spotId).unavailableDates[year] =
             spotToUpdate.unavailableDates[year].filter(
               (date) => !dates.includes(date),
             );
@@ -153,7 +155,7 @@ export class ReservationsService {
   ): Lake | null {
     for (let i = 0; i < reservation.data.length; i++) {
       for (let j = 0; j < lakeForUpdate.spots.length; j++) {
-        if (lakeForUpdate.spots[j].number === reservation.data[i].spot) {
+        if (lakeForUpdate.spots[j].spotId === reservation.data[i].spotId) {
           if (!lakeForUpdate.spots[j].unavailableDates) {
             lakeForUpdate.spots[j].unavailableDates = {};
           }

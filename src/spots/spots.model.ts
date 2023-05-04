@@ -1,7 +1,8 @@
 import { ReservationData } from '../reservations/reservations.model';
 
 export interface Spots {
-  number: number;
+  spotId: string;
+  number: string;
   unavailableDates: {
     [year: string]: string[];
   };
@@ -25,12 +26,13 @@ export interface HouseSpot {
 }
 
 export interface SpotsOutput {
-  number: number;
+  spotId: string;
+  number: string;
   unavailableDates: string[];
   info: SpotsInfo;
 }
 
 export interface SpotsOutputWithReservations {
-  number: number;
+  spotId: string;
   reservations: ReservationData[];
 }
