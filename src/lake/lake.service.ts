@@ -41,6 +41,7 @@ export class LakeService {
 
       const spotsMaped: SpotsOutput[] = lake.spots.map((spot) => ({
         number: spot.number,
+        spotId: spot.spotId,
         unavailableDates: spot?.unavailableDates
           ? spot?.unavailableDates[currentYear] || []
           : [],
