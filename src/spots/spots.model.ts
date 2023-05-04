@@ -1,5 +1,3 @@
-import { ReservationData } from '../reservations/reservations.model';
-
 export interface Spots {
   spotId: string;
   number: string;
