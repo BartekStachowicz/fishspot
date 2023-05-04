@@ -83,18 +83,19 @@ export class ReservationsController {
   }
 
   @Get('byspots/:lakename/:spotId')
-  async getReservationsBySpots(
+  async getReservationsBySpotsId(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
     @Param('lakename') lakeName: string,
     @Param('spotId') spotId: string,
   ): Promise<SpotsOutputWithReservations> {
-    const reservations = await this.reservationsService.getReservationsBySpots(
-      lakeName,
-      spotId,
-      +offset,
-      +limit,
-    );
+    const reservations =
+      await this.reservationsService.getReservationsBySpotsId(
+        lakeName,
+        spotId,
+        +offset,
+        +limit,
+      );
     return reservations;
   }
 

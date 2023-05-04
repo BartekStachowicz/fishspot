@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
-import { SpotsOutputWithReservations } from 'src/spots/spots.model';
+import { SpotsOutputWithReservations } from '../spots/spots.model';
 
 @Injectable()
 export class ReservationsService {
@@ -85,7 +85,7 @@ export class ReservationsService {
     return reservations;
   }
 
-  async getReservationsBySpots(
+  async getReservationsBySpotsId(
     lakeName: string,
     spotId: string,
     offset: number,

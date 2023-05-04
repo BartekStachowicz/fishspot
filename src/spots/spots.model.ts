@@ -17,6 +17,7 @@ export interface SpotsInfo {
   description: string;
   houseSpot: boolean;
   houseSpotPrice: HouseSpot;
+  spotCapacity: number;
 }
 
 export interface HouseSpot {
