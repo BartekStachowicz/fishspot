@@ -54,6 +54,7 @@ export class ReservationsController {
     @Query('offset') offset: number,
     @Query('limit') limit: number,
     @Query('filter') filter: string,
+    @Query('year') year: string,
     @Param('lakename') lakeName: string,
   ): Promise<ReservationData[]> {
     const reservations =
@@ -62,6 +63,7 @@ export class ReservationsController {
         +offset,
         +limit,
         filter,
+        year,
       );
     return reservations;
   }
@@ -70,6 +72,7 @@ export class ReservationsController {
   async getAllReservationsByYear(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('filter') filter: string,
     @Param('lakename') lakeName: string,
     @Param('year') year: string,
   ): Promise<ReservationData[]> {
@@ -79,6 +82,7 @@ export class ReservationsController {
         year,
         +offset,
         +limit,
+        filter,
       );
     return reservations;
   }
@@ -87,6 +91,8 @@ export class ReservationsController {
   async getReservationsBySpotsId(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('filter') filter: string,
+    @Query('year') year: string,
     @Param('lakename') lakeName: string,
     @Param('spotId') spotId: string,
   ): Promise<ReservationData[]> {
@@ -96,6 +102,8 @@ export class ReservationsController {
         spotId,
         +offset,
         +limit,
+        filter,
+        year,
       );
     return reservations;
   }
@@ -104,12 +112,16 @@ export class ReservationsController {
   async getTodaysReservations(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('filter') filter: string,
+    @Query('year') year: string,
     @Param('lakename') lakeName: string,
   ): Promise<ReservationData[]> {
     const reservations = await this.reservationsService.getTodaysReservations(
       lakeName,
       +offset,
       +limit,
+      filter,
+      year,
     );
     return reservations;
   }

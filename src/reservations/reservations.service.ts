@@ -61,10 +61,12 @@ export class ReservationsService {
     offset: number,
     limit: number,
     filter: string,
+    year: string,
   ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const currentYear = this.getCurrentYear();
-    const reservations = lake.reservations[currentYear]
+    if (year === '') year = currentYear;
+    const reservations = lake.reservations[year]
       .filter((reservation) => !reservation.confirmed)
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
@@ -78,13 +80,15 @@ export class ReservationsService {
     year: string,
     offset: number,
     limit: number,
+    filter: string,
   ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const reservations = lake.reservations[year]
       .filter((reservation) => reservation.confirmed)
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
-    return reservations;
+    if (filter === '') return reservations;
+    return reservations.filter((el) => el.fullName.includes(filter));
   }
 
   async getReservationsBySpotsId(
@@ -92,10 +96,13 @@ export class ReservationsService {
     spotId: string,
     offset: number,
     limit: number,
+    filter: string,
+    year: string,
   ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const currentYear = this.getCurrentYear();
-    const reservations = lake.reservations[currentYear];
+    if (year === '') year = currentYear;
+    const reservations = lake.reservations[year];
     const spotsWithReservations: ReservationData[] = [];
 
     reservations.forEach((reservation) => {
@@ -106,23 +113,29 @@ export class ReservationsService {
       });
     });
 
-    return spotsWithReservations
+    const resultReservations = spotsWithReservations
       .filter((reservation) => reservation.confirmed)
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
+
+    if (filter === '') return resultReservations;
+    return resultReservations.filter((el) => el.fullName.includes(filter));
   }
 
   async getTodaysReservations(
     lakeName: string,
     offset: number,
     limit: number,
+    filter: string,
+    year: string,
   ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const currentYear = this.getCurrentYear();
+    if (year === '') year = currentYear;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today.getTime() * 24 * 60 * 60 * 1000);
-    const reservations = lake.reservations[currentYear]
+    const reservations = lake.reservations[year]
       .filter(
         (el) =>
           new Date(el.timestamp) >= today && new Date(el.timestamp) < tomorrow,
@@ -130,7 +143,8 @@ export class ReservationsService {
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
 
-    return reservations;
+    if (filter === '') return reservations;
+    return reservations.filter((el) => el.fullName.includes(filter));
   }
 
   // async getReservationsWaitingForDeposit(lakeName: string, offset: number, limit: number) {
