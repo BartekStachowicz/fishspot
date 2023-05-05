@@ -72,7 +72,9 @@ export class ReservationsService {
       .slice(offset, offset + limit);
 
     if (filter === '') return reservations;
-    return reservations.filter((el) => el.fullName.includes(filter));
+    return reservations.filter((el) =>
+      el.fullName.toLowerCase().includes(filter.toLowerCase()),
+    );
   }
 
   async getAllReservationsByYear(
@@ -88,7 +90,9 @@ export class ReservationsService {
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
     if (filter === '') return reservations;
-    return reservations.filter((el) => el.fullName.includes(filter));
+    return reservations.filter((el) =>
+      el.fullName.toLowerCase().includes(filter.toLowerCase()),
+    );
   }
 
   async getReservationsBySpotsId(
@@ -119,7 +123,9 @@ export class ReservationsService {
       .slice(offset, offset + limit);
 
     if (filter === '') return resultReservations;
-    return resultReservations.filter((el) => el.fullName.includes(filter));
+    return resultReservations.filter((el) =>
+      el.fullName.toLowerCase().includes(filter.toLowerCase()),
+    );
   }
 
   async getTodaysReservations(
@@ -144,7 +150,9 @@ export class ReservationsService {
       .slice(offset, offset + limit);
 
     if (filter === '') return reservations;
-    return reservations.filter((el) => el.fullName.includes(filter));
+    return reservations.filter((el) =>
+      el.fullName.toLowerCase().includes(filter.toLowerCase()),
+    );
   }
 
   // async getReservationsWaitingForDeposit(lakeName: string, offset: number, limit: number) {
