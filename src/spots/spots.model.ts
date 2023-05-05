@@ -5,13 +5,11 @@ export interface Spots {
     [year: string]: string[];
   };
   info: SpotsInfo;
+  options: SpotOptions;
 }
 
 export interface SpotsInfo {
-  priceForDay: number;
-  priceForNight: number;
-  isPriceForWeekend: boolean;
-  priceForWeekend: number;
+  priceList: PriceList;
   description: string;
   houseSpot: boolean;
   houseSpotPrice: HouseSpot;
@@ -29,4 +27,37 @@ export interface SpotsOutput {
   number: string;
   unavailableDates: string[];
   info: SpotsInfo;
+  options: SpotOptions;
+}
+
+export interface PriceList {
+  options: {
+    weekend: boolean;
+  };
+  default: {
+    priceDay: number;
+    priceNigth: number;
+  };
+  weekend: {
+    priceDay: number;
+    priceNigth: number;
+  };
+  specials: {
+    [key: string]: SpecialDates;
+  };
+}
+
+export interface SpecialDates {
+  priceDay: number;
+  priceNigth: number;
+  dates: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface SpotOptions {
+  isDepositRequire: boolean;
+  depositValue: string;
+  depositRequiredSince: number;
 }

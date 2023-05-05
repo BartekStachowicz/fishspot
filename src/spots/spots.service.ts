@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
-import { Spots, SpotsInfo } from './spots.model';
+import { SpotOptions, Spots, SpotsInfo } from './spots.model';
 
 @Injectable()
 export class SpotsService {
@@ -59,6 +59,7 @@ export class SpotsService {
     spotId: string;
     number: string;
     info: SpotsInfo;
+    options: SpotOptions;
   }> {
     const lake = await this.lakeService.findByName(lakeName);
     const spotOutput: Spots = lake.spots.find((spot) => spot.spotId === spotId);
@@ -67,6 +68,7 @@ export class SpotsService {
       spotId: spotOutput.spotId,
       number: spotOutput.number,
       info: spotOutput.info,
+      options: spotOutput.options,
     };
   }
 

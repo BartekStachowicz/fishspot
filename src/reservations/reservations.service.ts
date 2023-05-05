@@ -60,6 +60,7 @@ export class ReservationsService {
     lakeName: string,
     offset: number,
     limit: number,
+    filter: string,
   ): Promise<ReservationData[]> {
     const lake = await this.lakeService.findByName(lakeName);
     const currentYear = this.getCurrentYear();
@@ -67,7 +68,9 @@ export class ReservationsService {
       .filter((reservation) => !reservation.confirmed)
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
-    return reservations;
+
+    if (filter === '') return reservations;
+    return reservations.filter((el) => el.fullName.includes(filter));
   }
 
   async getAllReservationsByYear(
@@ -108,6 +111,32 @@ export class ReservationsService {
       .sort((a, b) => +a.timestamp - +b.timestamp)
       .slice(offset, offset + limit);
   }
+
+  async getTodaysReservations(
+    lakeName: string,
+    offset: number,
+    limit: number,
+  ): Promise<ReservationData[]> {
+    const lake = await this.lakeService.findByName(lakeName);
+    const currentYear = this.getCurrentYear();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today.getTime() * 24 * 60 * 60 * 1000);
+    const reservations = lake.reservations[currentYear]
+      .filter(
+        (el) =>
+          new Date(el.timestamp) >= today && new Date(el.timestamp) < tomorrow,
+      )
+      .sort((a, b) => +a.timestamp - +b.timestamp)
+      .slice(offset, offset + limit);
+
+    return reservations;
+  }
+
+  // async getReservationsWaitingForDeposit(lakeName: string, offset: number, limit: number) {
+  //   const lake = await this.lakeService.findByName(lakeName);
+  //   const currentYear = this.getCurrentYear();
+  // }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
     const lake = await this.lakeService.findByName(lakeName);

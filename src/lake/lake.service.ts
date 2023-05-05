@@ -46,6 +46,7 @@ export class LakeService {
           ? spot?.unavailableDates[currentYear] || []
           : [],
         info: spot.info,
+        options: spot.options,
       }));
 
       return {

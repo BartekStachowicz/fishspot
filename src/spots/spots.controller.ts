@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
 import { SpotsService } from './spots.service';
-import { Spots, SpotsInfo } from './spots.model';
+import { SpotOptions, Spots, SpotsInfo } from './spots.model';
 
 @Controller('spots')
 export class SpotsController {
@@ -38,6 +38,7 @@ export class SpotsController {
     spotId: string;
     number: string;
     info: SpotsInfo;
+    options: SpotOptions;
   }> {
     const spot = this.spotsService.getSpotById(lakeName, spotId);
 

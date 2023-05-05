@@ -53,6 +53,7 @@ export class ReservationsController {
   async getNotConfirmedReservations(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
+    @Query('filter') filter: string,
     @Param('lakename') lakeName: string,
   ): Promise<ReservationData[]> {
     const reservations =
@@ -60,6 +61,7 @@ export class ReservationsController {
         lakeName,
         +offset,
         +limit,
+        filter,
       );
     return reservations;
   }
@@ -95,6 +97,20 @@ export class ReservationsController {
         +offset,
         +limit,
       );
+    return reservations;
+  }
+
+  @Get('todays/:lakename')
+  async getTodaysReservations(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+    @Param('lakename') lakeName: string,
+  ): Promise<ReservationData[]> {
+    const reservations = await this.reservationsService.getTodaysReservations(
+      lakeName,
+      +offset,
+      +limit,
+    );
     return reservations;
   }
 
