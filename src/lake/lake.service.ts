@@ -33,17 +33,17 @@ export class LakeService {
     lakeForUpdate.save();
   }
 
-  async getLake(lakeName: string): Promise<LakeOutput | null> {
+  async getLake(lakeName: string, year: string): Promise<LakeOutput | null> {
     try {
       const lake = await this.findByName(lakeName);
 
       const currentYear = this.getCurrentYear();
-
+      if (year === '') year = currentYear;
       const spotsMaped: SpotsOutput[] = lake.spots.map((spot) => ({
         number: spot.number,
         spotId: spot.spotId,
         unavailableDates: spot?.unavailableDates
-          ? spot?.unavailableDates[currentYear] || []
+          ? spot?.unavailableDates[year] || []
           : [],
         info: spot.info,
         options: spot.options,

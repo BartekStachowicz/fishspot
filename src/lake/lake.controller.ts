@@ -1,6 +1,6 @@
 import { JwtGuard } from '../auth/jwt.guard';
 import { Controller, Post } from '@nestjs/common';
-import { Body, Get, Param, UseGuards } from '@nestjs/common/decorators';
+import { Body, Get, Param, Query, UseGuards } from '@nestjs/common/decorators';
 
 import { LakeService } from './lake.service';
 import { Lake, LakeOutput } from './lake.model';
@@ -16,7 +16,10 @@ export class LakeController {
   }
 
   @Get(':name')
-  async getLake(@Param('name') lakeName: string): Promise<LakeOutput> {
-    return await this.lakeService.getLake(lakeName);
+  async getLake(
+    @Query('year') year: string,
+    @Param('name') lakeName: string,
+  ): Promise<LakeOutput> {
+    return await this.lakeService.getLake(lakeName, year);
   }
 }
