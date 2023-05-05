@@ -18,6 +18,6 @@ export interface ReservationData {
   fullPaymentMethod: string; //online, cash
   fullPaymentStatus: string; //oczekujące, zapłacone itp.
   depositPrice: number;
-  isDepositPaidOnline: boolean;
+  isDepositPaid: boolean;
   isDepositRequired: boolean;
 }

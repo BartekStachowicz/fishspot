@@ -126,6 +126,25 @@ export class ReservationsController {
     return reservations;
   }
 
+  @Get('deposit-paid/:lakename')
+  async getReservationsWithPaidDeposit(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+    @Query('filter') filter: string,
+    @Query('year') year: string,
+    @Param('lakename') lakeName: string,
+  ): Promise<ReservationData[]> {
+    const reservations =
+      await this.reservationsService.getReservationsWithPaidDeposit(
+        lakeName,
+        +offset,
+        +limit,
+        filter,
+        year,
+      );
+    return reservations;
+  }
+
   @Delete('delete/:lakename/:id')
   async deleteReservation(
     @Param('lakename') lakeName: string,

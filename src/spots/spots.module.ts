@@ -7,5 +7,6 @@ import { LakeModule } from 'src/lake/lake.module';
   imports: [LakeModule],
   controllers: [SpotsController],
   providers: [SpotsService],
+  exports: [SpotsService],
 })
 export class SpotsModule {}

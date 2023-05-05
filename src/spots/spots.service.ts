@@ -72,6 +72,8 @@ export class SpotsService {
     };
   }
 
+  /////////////FOR DEVELOPING
+
   async regenerateSpotId(lakeName: string) {
     const lake = await this.lakeService.findByName(lakeName);
 
@@ -82,7 +84,50 @@ export class SpotsService {
     await this.lakeService.updateLake(lake);
   }
 
-  private buildUniqueID(lakeName: string, number: string): string {
+  ///FOR TESTING
+
+  public genereteNewSpot(spotNumber: string, lakeName: string): Spots {
+    const spot: Spots = {
+      spotId: this.buildUniqueID(lakeName, spotNumber),
+      number: spotNumber,
+      unavailableDates: {},
+      info: {
+        priceList: {
+          options: {
+            weekend: true,
+          },
+          default: {
+            priceDay: 100,
+            priceNigth: 100,
+          },
+          weekend: {
+            priceDay: 150,
+            priceNigth: 150,
+          },
+          specials: {},
+        },
+        description: 'opis',
+        houseSpot: false,
+        houseSpotPrice: {
+          priceForMinimal: 200,
+          minNumberOfDays: 2,
+          priceForExtraDay: 200,
+        },
+        spotCapacity: 1,
+      },
+      options: {
+        isDepositRequire: false,
+        depositValue: '50%',
+        depositRequiredSince: 2,
+      },
+    };
+
+    return spot;
+  }
+
+  ////////////////////////////////////////
+
+  public buildUniqueID(lakeName: string, number: string): string {
     const uuid = uuidv4();
     const name =
       '$LN' + lakeName.charAt(0) + lakeName.charAt(lakeName.length - 1);

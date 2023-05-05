@@ -155,10 +155,25 @@ export class ReservationsService {
     );
   }
 
-  // async getReservationsWaitingForDeposit(lakeName: string, offset: number, limit: number) {
-  //   const lake = await this.lakeService.findByName(lakeName);
-  //   const currentYear = this.getCurrentYear();
-  // }
+  async getReservationsWithPaidDeposit(
+    lakeName: string,
+    offset: number,
+    limit: number,
+    filter: string,
+    year: string,
+  ) {
+    const lake = await this.lakeService.findByName(lakeName);
+    const currentYear = this.getCurrentYear();
+    if (year === '') year = currentYear;
+    const reservations = lake.reservations[year]
+      .filter((el) => el.isDepositPaid)
+      .sort((a, b) => +a.timestamp - +b.timestamp)
+      .slice(offset, offset + limit);
+    if (filter === '') return reservations;
+    return reservations.filter((el) =>
+      el.fullName.toLowerCase().includes(filter.toLowerCase()),
+    );
+  }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
     const lake = await this.lakeService.findByName(lakeName);

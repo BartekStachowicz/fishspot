@@ -15,6 +15,14 @@ export class LakeController {
     return await this.lakeService.createNewLake(lake);
   }
 
+  @Post('generate/:lakename/:numberOfSpots')
+  async generateNewLake(
+    @Param('lakename') lakeName: string,
+    @Param('numberOfSpots') number: number,
+  ) {
+    return await this.lakeService.generateNewLake(lakeName, number);
+  }
+
   @Get(':name')
   async getLake(
     @Query('year') year: string,

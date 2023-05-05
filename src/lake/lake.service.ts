@@ -2,11 +2,16 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Lake, LakeOutput } from './lake.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { SpotsOutput } from 'src/spots/spots.model';
+
+import { Spots, SpotsOutput } from '../spots/spots.model';
+import { SpotsService } from '../spots/spots.service';
 
 @Injectable()
 export class LakeService {
-  constructor(@InjectModel('Ocieka') private readonly lakeModel: Model<Lake>) {}
+  constructor(
+    @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
+    private spotsService: SpotsService,
+  ) {}
 
   async createNewLake(lake: Lake): Promise<Lake | null> {
     const lakeName = lake.name.toLowerCase().split(' ').join('-');
@@ -16,10 +21,38 @@ export class LakeService {
       throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
 
     const newLake = new this.lakeModel({ ...lake, name: lakeName });
-    newLake.save();
+    await newLake.save();
 
     return newLake;
   }
+
+  /////// AUTO GENERATE FOR TESTING
+
+  async generateNewLake(name: string, numberOfSpots: number): Promise<void> {
+    const lakeName = name.toLowerCase().split(' ').join('-');
+
+    const isUnique = await this.hasUniqueName(lakeName);
+    if (!isUnique)
+      throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
+
+    const spots: Spots[] = [];
+
+    for (let i = 1; i <= numberOfSpots; i++) {
+      spots.push(this.spotsService.genereteNewSpot(String(i), name));
+    }
+
+    const newLake = new this.lakeModel({
+      name: lakeName,
+      spots: spots,
+      reservations: {},
+    });
+
+    await newLake.save();
+
+    return newLake._id;
+  }
+
+  //////////////////////////////////////
 
   async updateLake(lake: Lake): Promise<void> {
     const lakeForUpdate = await this.findByName(lake.name);
@@ -30,7 +63,7 @@ export class LakeService {
     lakeForUpdate.reservations =
       lake?.reservations || lakeForUpdate.reservations;
 
-    lakeForUpdate.save();
+    await lakeForUpdate.save();
   }
 
   async getLake(lakeName: string, year: string): Promise<LakeOutput | null> {
