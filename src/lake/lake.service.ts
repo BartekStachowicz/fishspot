@@ -1,15 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { Lake, LakeOutput } from './lake.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Spots, SpotsOutput } from '../spots/spots.model';
-import { SpotsService } from '../spots/spots.service';
+import { SpotsService } from 'src/spots/spots.service';
 
 @Injectable()
 export class LakeService {
   constructor(
     @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
+    @Inject(forwardRef(() => SpotsService))
     private spotsService: SpotsService,
   ) {}
 

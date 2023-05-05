@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
@@ -6,7 +6,9 @@ import { SpotOptions, Spots, SpotsInfo } from './spots.model';
 
 @Injectable()
 export class SpotsService {
-  constructor(private lakeService: LakeService) {}
+  constructor(
+    @Inject(forwardRef(() => LakeService)) private lakeService: LakeService,
+  ) {}
 
   async addNewSpot(lakeName: string, spot: Spots): Promise<string> {
     const lake = await this.lakeService.findByName(lakeName);
