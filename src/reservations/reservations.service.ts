@@ -294,9 +294,14 @@ export class ReservationsService {
           year.forEach((reservation) => {
             const twoDaysAgo = new Date(reservation.timestamp);
             twoDaysAgo.setDate(twoDaysAgo.getDate() + 2);
-
-            if (twoDaysAgo < new Date()) {
-              this.deleteReservation(lake.name, reservation.id);
+            if (
+              !reservation.confirmed &&
+              !reservation.isDepositPaid &&
+              !reservation.isDepositRequired
+            ) {
+              if (twoDaysAgo < new Date()) {
+                this.deleteReservation(lake.name, reservation.id);
+              }
             }
           });
         });
