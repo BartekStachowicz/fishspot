@@ -21,56 +21,62 @@ export class LakeService {
   ) {}
 
   async createNewLake(lake: Lake): Promise<Lake | null> {
-    const lakeName = lake.name.toLowerCase().split(' ').join('-');
+    try {
+      const lakeName = lake.name.toLowerCase().split(' ').join('-');
 
-    const isUnique = await this.hasUniqueName(lakeName);
-    if (!isUnique)
-      throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
+      const isUnique = await this.hasUniqueName(lakeName);
+      if (!isUnique)
+        throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
 
-    const newLake = new this.lakeModel({ ...lake, name: lakeName });
-    await newLake.save();
+      const newLake = new this.lakeModel({ ...lake, name: lakeName });
+      await newLake.save();
 
-    return newLake;
+      return newLake;
+    } catch (error) {}
   }
 
   /////// AUTO GENERATE FOR TESTING
 
   async generateNewLake(name: string, numberOfSpots: number): Promise<void> {
-    const lakeName = name.toLowerCase().split(' ').join('-');
+    try {
+      const lakeName = name.toLowerCase().split(' ').join('-');
 
-    const isUnique = await this.hasUniqueName(lakeName);
-    if (!isUnique)
-      throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
+      const isUnique = await this.hasUniqueName(lakeName);
+      if (!isUnique)
+        throw new HttpException('Lake already exist!', HttpStatus.CONFLICT);
 
-    const spots: Spots[] = [];
+      const spots: Spots[] = [];
 
-    for (let i = 1; i <= numberOfSpots; i++) {
-      spots.push(this.spotsService.genereteNewSpot(String(i), name));
-    }
+      for (let i = 1; i <= numberOfSpots; i++) {
+        spots.push(this.spotsService.genereteNewSpot(String(i), name));
+      }
 
-    const newLake = new this.lakeModel({
-      name: lakeName,
-      spots: spots,
-      reservations: {},
-    });
+      const newLake = new this.lakeModel({
+        name: lakeName,
+        spots: spots,
+        reservations: {},
+      });
 
-    await newLake.save();
+      await newLake.save();
 
-    return newLake._id;
+      return newLake._id;
+    } catch (error) {}
   }
 
   //////////////////////////////////////
 
   async updateLake(lake: Lake): Promise<void> {
-    const lakeForUpdate = await this.findByName(lake.name);
+    try {
+      const lakeForUpdate = await this.findByName(lake.name);
 
-    lakeForUpdate.name =
-      lake?.name.toLowerCase().split(' ').join('-') || lakeForUpdate.name;
-    lakeForUpdate.spots = lake?.spots || lakeForUpdate.spots;
-    lakeForUpdate.reservations =
-      lake?.reservations || lakeForUpdate.reservations;
+      lakeForUpdate.name =
+        lake?.name.toLowerCase().split(' ').join('-') || lakeForUpdate.name;
+      lakeForUpdate.spots = lake?.spots || lakeForUpdate.spots;
+      lakeForUpdate.reservations =
+        lake?.reservations || lakeForUpdate.reservations;
 
-    await lakeForUpdate.save();
+      await lakeForUpdate.save();
+    } catch (error) {}
   }
 
   async getLake(lakeName: string, year: string): Promise<LakeOutput | null> {

@@ -1,4 +1,10 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
@@ -11,47 +17,62 @@ export class SpotsService {
   ) {}
 
   async addNewSpot(lakeName: string, spot: Spots): Promise<string> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const id = this.buildUniqueID(lakeName, spot.number);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const id = this.buildUniqueID(lakeName, spot.number);
 
-    const newSpot: Spots = {
-      ...spot,
-      spotId: id,
-    };
+      const newSpot: Spots = {
+        ...spot,
+        spotId: id,
+      };
 
-    lake.spots.push(newSpot);
+      lake.spots.push(newSpot);
 
-    await this.lakeService.updateLake(lake);
+      await this.lakeService.updateLake(lake);
 
-    return id;
+      return id;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async updateSpot(lakeName: string, spot: Spots): Promise<Spots> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const spotIndex = lake.spots.findIndex((s) => s.spotId === spot.spotId);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const spotIndex = lake.spots.findIndex((s) => s.spotId === spot.spotId);
 
-    if (spotIndex === -1) {
-      throw new Error('Spot not found');
+      if (spotIndex === -1) {
+        throw new Error('Spot not found');
+      }
+
+      const updatedSpot: Spots = {
+        ...lake.spots[spotIndex],
+        ...spot,
+      };
+
+      lake.spots.splice(spotIndex, 1, updatedSpot);
+
+      await this.lakeService.updateLake(lake);
+
+      return updatedSpot;
+    } catch (error) {
+      throw new Error(error);
     }
-
-    const updatedSpot: Spots = {
-      ...lake.spots[spotIndex],
-      ...spot,
-    };
-
-    lake.spots.splice(spotIndex, 1, updatedSpot);
-
-    await this.lakeService.updateLake(lake);
-
-    return updatedSpot;
   }
 
   async deleteSpot(lakeName: string, spotId: string): Promise<void> {
-    const lake = await this.lakeService.findByName(lakeName);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      lake.spots.filter((spot) => spot.spotId !== spotId);
 
-    lake.spots.filter((spot) => spot.spotId !== spotId);
-
-    await this.lakeService.updateLake(lake);
+      await this.lakeService.updateLake(lake);
+    } catch (error) {}
   }
 
   async getSpotById(
@@ -63,68 +84,79 @@ export class SpotsService {
     info: SpotsInfo;
     options: SpotOptions;
   }> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const spotOutput: Spots = lake.spots.find((spot) => spot.spotId === spotId);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const spotOutput: Spots = lake.spots.find(
+        (spot) => spot.spotId === spotId,
+      );
 
-    return {
-      spotId: spotOutput.spotId,
-      number: spotOutput.number,
-      info: spotOutput.info,
-      options: spotOutput.options,
-    };
+      return {
+        spotId: spotOutput.spotId,
+        number: spotOutput.number,
+        info: spotOutput.info,
+        options: spotOutput.options,
+      };
+    } catch (error) {}
   }
 
   /////////////FOR DEVELOPING
 
   async regenerateSpotId(lakeName: string) {
-    const lake = await this.lakeService.findByName(lakeName);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      lake.spots.map((spot) => {
+        spot.spotId = this.buildUniqueID(lakeName, spot.number);
+      });
 
-    lake.spots.map((spot) => {
-      spot.spotId = this.buildUniqueID(lakeName, spot.number);
-    });
-
-    await this.lakeService.updateLake(lake);
+      await this.lakeService.updateLake(lake);
+    } catch (error) {}
   }
 
   ///FOR TESTING
 
   public genereteNewSpot(spotNumber: string, lakeName: string): Spots {
-    const spot: Spots = {
-      spotId: this.buildUniqueID(lakeName, spotNumber),
-      number: spotNumber,
-      unavailableDates: {},
-      info: {
-        priceList: {
-          options: {
-            weekend: true,
+    try {
+      const spot: Spots = {
+        spotId: this.buildUniqueID(lakeName, spotNumber),
+        number: spotNumber,
+        unavailableDates: {},
+        info: {
+          priceList: {
+            options: {
+              weekend: true,
+            },
+            default: {
+              priceDay: 100,
+              priceNigth: 100,
+            },
+            weekend: {
+              priceDay: 150,
+              priceNigth: 150,
+            },
+            specials: {},
           },
-          default: {
-            priceDay: 100,
-            priceNigth: 100,
+          description: 'opis',
+          houseSpot: false,
+          houseSpotPrice: {
+            priceForMinimal: 200,
+            minNumberOfDays: 2,
+            priceForExtraDay: 200,
           },
-          weekend: {
-            priceDay: 150,
-            priceNigth: 150,
-          },
-          specials: {},
+          spotCapacity: 1,
         },
-        description: 'opis',
-        houseSpot: false,
-        houseSpotPrice: {
-          priceForMinimal: 200,
-          minNumberOfDays: 2,
-          priceForExtraDay: 200,
+        options: {
+          isDepositRequire: false,
+          depositValue: '50%',
+          depositRequiredSince: 2,
         },
-        spotCapacity: 1,
-      },
-      options: {
-        isDepositRequire: false,
-        depositValue: '50%',
-        depositRequiredSince: 2,
-      },
-    };
+      };
 
-    return spot;
+      return spot;
+    } catch (error) {}
   }
 
   ////////////////////////////////////////

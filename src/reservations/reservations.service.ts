@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
@@ -13,6 +13,8 @@ export class ReservationsService {
   async createNewReservations(lakeName: string, reservation: ReservationData) {
     try {
       const lakeForUpdate = await this.lakeService.findByName(lakeName);
+      if (!lakeForUpdate)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
       const newReservation: ReservationData = {
@@ -41,13 +43,17 @@ export class ReservationsService {
   }
 
   async updateConfirmedReservation(lakeName: string, id: string) {
-    const lake = await this.lakeService.findByName(lakeName);
-    const year = this.getYearFromID(id);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const year = this.getYearFromID(id);
 
-    lake.reservations[year].find((el) => el.id === id).confirmed = true;
-    await this.lakeService.updateLake(lake);
+      lake.reservations[year].find((el) => el.id === id).confirmed = true;
+      await this.lakeService.updateLake(lake);
 
-    return lake.reservations[year].find((el) => el.id === id);
+      return lake.reservations[year].find((el) => el.id === id);
+    } catch (error) {}
   }
 
   async getReservationByID(
@@ -64,18 +70,22 @@ export class ReservationsService {
     filter: string,
     year: string,
   ): Promise<ReservationData[]> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const currentYear = this.getCurrentYear();
-    if (year === '') year = currentYear;
-    const reservations = lake.reservations[year]
-      .filter((reservation) => !reservation.confirmed)
-      .sort((a, b) => +a.timestamp - +b.timestamp)
-      .slice(offset, offset + limit);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+      const reservations = lake.reservations[year]
+        .filter((reservation) => !reservation.confirmed)
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit);
 
-    if (filter === '') return reservations;
-    return reservations.filter((el) =>
-      el.fullName.toLowerCase().includes(filter.toLowerCase()),
-    );
+      if (filter === '') return reservations;
+      return reservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {}
   }
 
   async getAllReservationsByYear(
@@ -85,15 +95,19 @@ export class ReservationsService {
     limit: number,
     filter: string,
   ): Promise<ReservationData[]> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const reservations = lake.reservations[year]
-      .filter((reservation) => reservation.confirmed)
-      .sort((a, b) => +a.timestamp - +b.timestamp)
-      .slice(offset, offset + limit);
-    if (filter === '') return reservations;
-    return reservations.filter((el) =>
-      el.fullName.toLowerCase().includes(filter.toLowerCase()),
-    );
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const reservations = lake.reservations[year]
+        .filter((reservation) => reservation.confirmed)
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit);
+      if (filter === '') return reservations;
+      return reservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {}
   }
 
   async getReservationsBySpotsId(
@@ -104,29 +118,33 @@ export class ReservationsService {
     filter: string,
     year: string,
   ): Promise<ReservationData[]> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const currentYear = this.getCurrentYear();
-    if (year === '') year = currentYear;
-    const reservations = lake.reservations[year];
-    const spotsWithReservations: ReservationData[] = [];
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+      const reservations = lake.reservations[year];
+      const spotsWithReservations: ReservationData[] = [];
 
-    reservations.forEach((reservation) => {
-      reservation.data.forEach((el) => {
-        if (el.spotId === spotId) {
-          spotsWithReservations.push(reservation);
-        }
+      reservations.forEach((reservation) => {
+        reservation.data.forEach((el) => {
+          if (el.spotId === spotId) {
+            spotsWithReservations.push(reservation);
+          }
+        });
       });
-    });
 
-    const resultReservations = spotsWithReservations
-      .filter((reservation) => reservation.confirmed)
-      .sort((a, b) => +a.timestamp - +b.timestamp)
-      .slice(offset, offset + limit);
+      const resultReservations = spotsWithReservations
+        .filter((reservation) => reservation.confirmed)
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit);
 
-    if (filter === '') return resultReservations;
-    return resultReservations.filter((el) =>
-      el.fullName.toLowerCase().includes(filter.toLowerCase()),
-    );
+      if (filter === '') return resultReservations;
+      return resultReservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {}
   }
 
   async getTodaysReservations(
@@ -136,24 +154,29 @@ export class ReservationsService {
     filter: string,
     year: string,
   ): Promise<ReservationData[]> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const currentYear = this.getCurrentYear();
-    if (year === '') year = currentYear;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today.getTime() * 24 * 60 * 60 * 1000);
-    const reservations = lake.reservations[year]
-      .filter(
-        (el) =>
-          new Date(el.timestamp) >= today && new Date(el.timestamp) < tomorrow,
-      )
-      .sort((a, b) => +a.timestamp - +b.timestamp)
-      .slice(offset, offset + limit);
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today.getTime() * 24 * 60 * 60 * 1000);
+      const reservations = lake.reservations[year]
+        .filter(
+          (el) =>
+            new Date(el.timestamp) >= today &&
+            new Date(el.timestamp) < tomorrow,
+        )
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit);
 
-    if (filter === '') return reservations;
-    return reservations.filter((el) =>
-      el.fullName.toLowerCase().includes(filter.toLowerCase()),
-    );
+      if (filter === '') return reservations;
+      return reservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {}
   }
 
   async getReservationsWithPaidDeposit(
@@ -163,67 +186,82 @@ export class ReservationsService {
     filter: string,
     year: string,
   ) {
-    const lake = await this.lakeService.findByName(lakeName);
-    const currentYear = this.getCurrentYear();
-    if (year === '') year = currentYear;
-    const reservations = lake.reservations[year]
-      .filter((el) => el.isDepositPaid)
-      .sort((a, b) => +a.timestamp - +b.timestamp)
-      .slice(offset, offset + limit);
-    if (filter === '') return reservations;
-    return reservations.filter((el) =>
-      el.fullName.toLowerCase().includes(filter.toLowerCase()),
-    );
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+      const reservations = lake.reservations[year]
+        .filter((el) => el.isDepositPaid)
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit);
+      if (filter === '') return reservations;
+      return reservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {}
   }
 
   @Cron(CronExpression.EVERY_12_HOURS)
   async cleanExpiredReservations() {
-    const lakes: Lake[] = await this.lakeService.findAll();
+    try {
+      const lakes: Lake[] = await this.lakeService.findAll();
+      if (!lakes)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      lakes.forEach((lake) => {
+        Object.values(lake.reservations).forEach((year) => {
+          year.forEach((reservation) => {
+            const twoDaysAgo = new Date(reservation.timestamp);
+            twoDaysAgo.setDate(twoDaysAgo.getDate() + 2);
 
-    lakes.forEach((lake) => {
-      Object.values(lake.reservations).forEach((year) => {
-        year.forEach((reservation) => {
-          const twoDaysAgo = new Date(reservation.timestamp);
-          twoDaysAgo.setDate(twoDaysAgo.getDate() + 2);
-
-          if (twoDaysAgo < new Date()) {
-            this.deleteReservation(lake.name, reservation.id);
-          }
+            if (twoDaysAgo < new Date()) {
+              this.deleteReservation(lake.name, reservation.id);
+            }
+          });
         });
       });
-    });
+    } catch (error) {}
   }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const year = this.getYearFromID(id);
-    const data = (await this.getReservationByID(lakeName, id)).data;
-    lake.reservations[year] = lake.reservations[year].filter(
-      (el) => el.id !== id,
-    );
-    data.forEach(({ dates, spotId }) => {
-      const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
-      if (spotToUpdate && spotToUpdate.unavailableDates) {
-        Object.keys(spotToUpdate.unavailableDates).forEach((year) => {
-          lake.spots.find((s) => s.spotId === spotId).unavailableDates[year] =
-            spotToUpdate.unavailableDates[year].filter(
-              (date) => !dates.includes(date),
-            );
-        });
-      }
-    });
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const year = this.getYearFromID(id);
+      const data = (await this.getReservationByID(lakeName, id)).data;
+      lake.reservations[year] = lake.reservations[year].filter(
+        (el) => el.id !== id,
+      );
+      data.forEach(({ dates, spotId }) => {
+        const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
+        if (spotToUpdate && spotToUpdate.unavailableDates) {
+          Object.keys(spotToUpdate.unavailableDates).forEach((year) => {
+            lake.spots.find((s) => s.spotId === spotId).unavailableDates[year] =
+              spotToUpdate.unavailableDates[year].filter(
+                (date) => !dates.includes(date),
+              );
+          });
+        }
+      });
 
-    await this.lakeService.updateLake(lake);
+      await this.lakeService.updateLake(lake);
+    } catch (error) {}
   }
 
   private async findReservationByID(
     lakeName: string,
     id: string,
   ): Promise<ReservationData> {
-    const lake = await this.lakeService.findByName(lakeName);
-    const year = this.getYearFromID(id);
-    const reservation = lake.reservations[year].find((el) => el.id === id);
-    return reservation;
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      const year = this.getYearFromID(id);
+      const reservation = lake.reservations[year].find((el) => el.id === id);
+      return reservation;
+    } catch (error) {}
   }
 
   private addUnavailableDates(
@@ -231,23 +269,25 @@ export class ReservationsService {
     reservation: ReservationData,
     year: string,
   ): Lake | null {
-    for (let i = 0; i < reservation.data.length; i++) {
-      for (let j = 0; j < lakeForUpdate.spots.length; j++) {
-        if (lakeForUpdate.spots[j].spotId === reservation.data[i].spotId) {
-          if (!lakeForUpdate.spots[j].unavailableDates) {
-            lakeForUpdate.spots[j].unavailableDates = {};
+    try {
+      for (let i = 0; i < reservation.data.length; i++) {
+        for (let j = 0; j < lakeForUpdate.spots.length; j++) {
+          if (lakeForUpdate.spots[j].spotId === reservation.data[i].spotId) {
+            if (!lakeForUpdate.spots[j].unavailableDates) {
+              lakeForUpdate.spots[j].unavailableDates = {};
+            }
+            if (!lakeForUpdate.spots[j].unavailableDates[year]) {
+              lakeForUpdate.spots[j].unavailableDates[year] = [];
+            }
+            lakeForUpdate.spots[j].unavailableDates[year] = [
+              ...lakeForUpdate.spots[j].unavailableDates[year],
+              ...reservation.data[i].dates,
+            ];
           }
-          if (!lakeForUpdate.spots[j].unavailableDates[year]) {
-            lakeForUpdate.spots[j].unavailableDates[year] = [];
-          }
-          lakeForUpdate.spots[j].unavailableDates[year] = [
-            ...lakeForUpdate.spots[j].unavailableDates[year],
-            ...reservation.data[i].dates,
-          ];
         }
       }
-    }
-    return lakeForUpdate;
+      return lakeForUpdate;
+    } catch (error) {}
   }
 
   private getYearFromID(id: string): string {
