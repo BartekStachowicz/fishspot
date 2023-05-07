@@ -51,7 +51,12 @@ export class ReservationsService {
       );
       await this.lakeService.updateLake(updatedLake);
       return newReservation;
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async updateConfirmedReservation(lakeName: string, id: string) {
@@ -65,7 +70,12 @@ export class ReservationsService {
       await this.lakeService.updateLake(lake);
 
       return lake.reservations[year].find((el) => el.id === id);
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to update reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async updateReservation(
@@ -130,7 +140,12 @@ export class ReservationsService {
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getAllReservationsByYear(
@@ -152,7 +167,12 @@ export class ReservationsService {
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getReservationsBySpotsId(
@@ -189,7 +209,12 @@ export class ReservationsService {
       return resultReservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getTodaysReservations(
@@ -221,7 +246,12 @@ export class ReservationsService {
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getReservationsWithPaidDeposit(
@@ -245,7 +275,12 @@ export class ReservationsService {
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Cron(CronExpression.EVERY_12_HOURS)
@@ -266,7 +301,12 @@ export class ReservationsService {
           });
         });
       });
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to clean reservations',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
@@ -292,7 +332,12 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private async findReservationByID(
@@ -306,7 +351,12 @@ export class ReservationsService {
       const year = this.getYearFromID(id);
       const reservation = lake.reservations[year].find((el) => el.id === id);
       return reservation;
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to find reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private addUnavailableDates(
@@ -332,32 +382,44 @@ export class ReservationsService {
         }
       }
       return lakeForUpdate;
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to add unavailable dates',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private checkIfDatesAreAvailable(
     spots: Spots[],
     data: { dates: string[]; spotId: string }[],
   ): string[] | boolean {
-    const result: string[] = [];
+    try {
+      const result: string[] = [];
 
-    let datesToCheck: string[];
+      let datesToCheck: string[];
 
-    data.forEach((d) => {
-      datesToCheck = [...datesToCheck, ...d.dates];
-    });
+      data.forEach((d) => {
+        datesToCheck = [...datesToCheck, ...d.dates];
+      });
 
-    spots.forEach((spot) => {
-      Object.values(spot.unavailableDates).forEach((year) => {
-        year.forEach((date) => {
-          if (datesToCheck.includes(date)) {
-            result.push(date);
-          }
+      spots.forEach((spot) => {
+        Object.values(spot.unavailableDates).forEach((year) => {
+          year.forEach((date) => {
+            if (datesToCheck.includes(date)) {
+              result.push(date);
+            }
+          });
         });
       });
-    });
 
-    return result.length > 0 ? result : true;
+      return result.length > 0 ? result : true;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to check dates',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private getYearFromID(id: string): string {

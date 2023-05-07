@@ -34,7 +34,10 @@ export class SpotsService {
 
       return id;
     } catch (error) {
-      throw new Error(error);
+      throw new HttpException(
+        'Failed to add spot',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -60,7 +63,10 @@ export class SpotsService {
 
       return updatedSpot;
     } catch (error) {
-      throw new Error(error);
+      throw new HttpException(
+        'Failed to update spot',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -72,7 +78,12 @@ export class SpotsService {
       lake.spots.filter((spot) => spot.spotId !== spotId);
 
       await this.lakeService.updateLake(lake);
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to delete spot',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getSpotById(
@@ -98,7 +109,12 @@ export class SpotsService {
         info: spotOutput.info,
         options: spotOutput.options,
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(
+        'Failed to get spot',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /////////////FOR DEVELOPING
