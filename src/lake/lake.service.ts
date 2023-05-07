@@ -118,6 +118,14 @@ export class LakeService {
     }
   }
 
+  async findAll(): Promise<Lake[] | null> {
+    try {
+      return this.lakeModel.find().exec();
+    } catch {
+      throw new HttpException('Lake not found!', HttpStatus.NOT_FOUND);
+    }
+  }
+
   private getCurrentYear(): string {
     return String(new Date().getFullYear());
   }

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ReservationsService {
@@ -173,6 +174,24 @@ export class ReservationsService {
     return reservations.filter((el) =>
       el.fullName.toLowerCase().includes(filter.toLowerCase()),
     );
+  }
+
+  @Cron(CronExpression.EVERY_12_HOURS)
+  async cleanExpiredReservations() {
+    const lakes: Lake[] = await this.lakeService.findAll();
+
+    lakes.forEach((lake) => {
+      Object.values(lake.reservations).forEach((year) => {
+        year.forEach((reservation) => {
+          const twoDaysAgo = new Date(reservation.timestamp);
+          twoDaysAgo.setDate(twoDaysAgo.getDate() + 2);
+
+          if (twoDaysAgo < new Date()) {
+            this.deleteReservation(lake.name, reservation.id);
+          }
+        });
+      });
+    });
   }
 
   async deleteReservation(lakeName: string, id: string): Promise<void> {
