@@ -1,20 +1,32 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Spots } from '../spots/spots.model';
 
 @Injectable()
 export class ReservationsService {
   constructor(private lakeService: LakeService) {}
 
-  async createNewReservations(lakeName: string, reservation: ReservationData) {
+  async createNewReservations(
+    lakeName: string,
+    reservation: ReservationData,
+  ): Promise<boolean | ReservationData | string[]> {
     try {
       const lakeForUpdate = await this.lakeService.findByName(lakeName);
       if (!lakeForUpdate)
         throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+
+      const isAvailable: string[] | boolean = this.checkIfDatesAreAvailable(
+        lakeForUpdate.spots,
+        reservation.data,
+      );
+
+      if (!isAvailable) return isAvailable;
+
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
       const newReservation: ReservationData = {
@@ -54,6 +66,39 @@ export class ReservationsService {
 
       return lake.reservations[year].find((el) => el.id === id);
     } catch (error) {}
+  }
+
+  async updateReservation(
+    lakeName: string,
+    id: string,
+    reservationData: ReservationData,
+  ): Promise<ReservationData> {
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake) {
+        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+      }
+      const year = this.getYearFromID(id);
+      const reservationIndex = lake.reservations[year].findIndex(
+        (el) => el.id === id,
+      );
+      if (reservationIndex === -1) {
+        throw new HttpException('Reservation not found', HttpStatus.NOT_FOUND);
+      }
+      const reservationToUpdate = Object.assign(
+        {},
+        lake.reservations[year][reservationIndex],
+        reservationData,
+      );
+      lake.reservations[year][reservationIndex] = reservationToUpdate;
+      await this.lakeService.updateLake(lake);
+      return reservationToUpdate;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to update reservation',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getReservationByID(
@@ -288,6 +333,31 @@ export class ReservationsService {
       }
       return lakeForUpdate;
     } catch (error) {}
+  }
+
+  private checkIfDatesAreAvailable(
+    spots: Spots[],
+    data: { dates: string[]; spotId: string }[],
+  ): string[] | boolean {
+    const result: string[] = [];
+
+    let datesToCheck: string[];
+
+    data.forEach((d) => {
+      datesToCheck = [...datesToCheck, ...d.dates];
+    });
+
+    spots.forEach((spot) => {
+      Object.values(spot.unavailableDates).forEach((year) => {
+        year.forEach((date) => {
+          if (datesToCheck.includes(date)) {
+            result.push(date);
+          }
+        });
+      });
+    });
+
+    return result.length > 0 ? result : true;
   }
 
   private getYearFromID(id: string): string {

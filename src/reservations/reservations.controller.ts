@@ -19,7 +19,7 @@ export class ReservationsController {
   async createNewReservation(
     @Param('lakename') lakeName: string,
     @Body() reservation: ReservationData,
-  ): Promise<ReservationData | null> {
+  ): Promise<ReservationData | null | string[] | boolean> {
     const newReservation = await this.reservationsService.createNewReservations(
       lakeName,
       reservation,
@@ -34,6 +34,20 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
+    return updatedReservation;
+  }
+
+  @Post('update/:lakename/:id')
+  async updateReservation(
+    @Param('lakename') lakeName: string,
+    @Param('id') id: string,
+    @Body() reservation: ReservationData,
+  ): Promise<ReservationData> {
+    const updatedReservation = await this.reservationsService.updateReservation(
+      lakeName,
+      id,
+      reservation,
+    );
     return updatedReservation;
   }
 
