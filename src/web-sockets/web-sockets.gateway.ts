@@ -13,5 +13,6 @@ export class DatesGateway {
   @SubscribeMessage('message')
   handleMessage(@MessageBody() message: any): void {
     this.server.emit('message', message);
+    console.log(message);
   }
 }
