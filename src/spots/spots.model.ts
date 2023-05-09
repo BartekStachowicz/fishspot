@@ -42,12 +42,11 @@ export interface PriceList {
     priceDay: number;
     priceNight: number;
   };
-  specials: {
-    [key: string]: SpecialDates;
-  };
+  specials: SpecialDates[];
 }
 
 export interface SpecialDates {
+  name: string;
   priceDay: number;
   priceNight: number;
   dates: {
