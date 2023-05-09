@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
-@WebSocketGateway({ cors: '*' })
+@WebSocketGateway()
 @Injectable()
 export class DatesGateway {
   @WebSocketServer()
