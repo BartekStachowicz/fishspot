@@ -23,4 +23,9 @@ export class DatesGateway {
     console.log(client);
     console.log(message);
   }
+
+  @SubscribeMessage('disconnect')
+  handleDisconnect(client: Socket): void {
+    console.log(`Client disconnected: ${client.id}`);
+  }
 }
