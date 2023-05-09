@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { BlockedDates, WebSocketsService } from './web-sockets.service';
+import { BlockedDatesInput, WebSocketsService } from './web-sockets.service';
 
 @WebSocketGateway({ cors: '*' })
 @Injectable()
@@ -19,17 +19,17 @@ export class DatesGateway {
 
   @SubscribeMessage('message')
   handleMessage(
-    @MessageBody() message: string[],
+    @MessageBody() message: { date: string; spotId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const blockedDates: BlockedDates = {
+    const blockedDates: BlockedDatesInput = {
       clientId: client.id,
-      dates: message,
+      date: message.date,
+      spotId: message.spotId,
     };
     const result = this.webSocketsService.setBlockedDates(blockedDates);
-    console.log(`Function setBlockedDates returns: ${result}`);
+    console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
     this.server.emit('message', result);
-    console.log(`Client: ${client.id} send: ${message}`);
   }
 
   @SubscribeMessage('disconnect')

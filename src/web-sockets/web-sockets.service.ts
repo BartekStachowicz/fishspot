@@ -1,35 +1,96 @@
 import { Injectable } from '@nestjs/common';
 
-export interface BlockedDates {
+export interface BlockedDatesInput {
   clientId: string;
-  dates: string[];
+  date: string;
+  spotId: string;
 }
 
-let allBlockedDates: BlockedDates[] = [];
+export interface BlockedDatesOutput {
+  clientId: string;
+  data: {
+    dates: string[];
+    spotId: string;
+  }[];
+}
+
+export interface OutputDatesWithSpotsId {
+  dates: string[];
+  spotId: string;
+}
+
+let allBlockedDates: BlockedDatesOutput[] = [];
 
 @Injectable()
 export class WebSocketsService {
-  public setBlockedDates(blockedDates: BlockedDates): BlockedDates[] {
-    const isExist = allBlockedDates.findIndex(
+  public setBlockedDates(
+    blockedDates: BlockedDatesInput,
+  ): OutputDatesWithSpotsId[] {
+    const index = allBlockedDates.findIndex(
       (date) => date.clientId === blockedDates.clientId,
     );
-    console.log('Is Exist ' + isExist);
-
-    if (isExist !== -1) {
-      allBlockedDates[isExist] = blockedDates;
+    if (index === -1) {
+      allBlockedDates.push({
+        clientId: blockedDates.clientId,
+        data: [
+          {
+            dates: [blockedDates.date],
+            spotId: blockedDates.spotId,
+          },
+        ],
+      });
     } else {
-      allBlockedDates.push(blockedDates);
+      const existingDates = allBlockedDates[index].data;
+      const existingSpotIndex = existingDates.findIndex(
+        (data) => data.spotId === blockedDates.spotId,
+      );
+      if (existingSpotIndex === -1) {
+        existingDates.push({
+          dates: [blockedDates.date],
+          spotId: blockedDates.spotId,
+        });
+      } else {
+        const dates = existingDates[existingSpotIndex].dates;
+        if (dates.includes(blockedDates.date)) {
+          dates.splice(dates.indexOf(blockedDates.date), 1);
+        } else {
+          dates.push(blockedDates.date);
+        }
+      }
     }
-    console.log('Tablica niedostępnych dat (dodawanie):');
-    console.log(allBlockedDates);
-    return allBlockedDates;
+
+    const output = this.transformDataForFrontend(allBlockedDates);
+    console.log(JSON.stringify(output));
+    return output;
   }
 
   public clearBlockedDates(clientId: string): void {
     allBlockedDates = allBlockedDates.filter(
       (date) => date.clientId !== clientId,
     );
-    console.log('Tablica niedostępnych dat (usuwanie):');
-    console.log(allBlockedDates);
+  }
+
+  private transformDataForFrontend(
+    allBlockedDates: BlockedDatesOutput[],
+  ): OutputDatesWithSpotsId[] {
+    const outputMap = new Map<string, string[]>();
+
+    for (const dates of allBlockedDates) {
+      for (const data of dates.data) {
+        const existingDates = outputMap.get(data.spotId) || [];
+        const newDates = [
+          ...existingDates,
+          ...data.dates.filter((date) => !existingDates.includes(date)),
+        ];
+        outputMap.set(data.spotId, newDates);
+      }
+    }
+
+    const output: OutputDatesWithSpotsId[] = [];
+    for (const [spotId, dates] of outputMap) {
+      output.push({ spotId, dates });
+    }
+
+    return output;
   }
 }
