@@ -36,11 +36,11 @@ export interface PriceList {
   };
   default: {
     priceDay: number;
-    priceNigth: number;
+    priceNight: number;
   };
   weekend: {
     priceDay: number;
-    priceNigth: number;
+    priceNight: number;
   };
   specials: {
     [key: string]: SpecialDates;
@@ -49,7 +49,7 @@ export interface PriceList {
 
 export interface SpecialDates {
   priceDay: number;
-  priceNigth: number;
+  priceNight: number;
   dates: {
     startDate: string;
     endDate: string;

@@ -17,6 +17,8 @@ import { MailModule } from './mail/mail.module';
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
 const MONGO_DB_USER = process.env.MONGO_DB_USER;
 const MONGO_DB_DATABASE = process.env.MONGO_DB_DATABASE;
+const EMAIL_DOMAIN = process.env.EMAIL_DOMAIN;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 @Module({
   imports: [
@@ -38,9 +40,17 @@ const MONGO_DB_DATABASE = process.env.MONGO_DB_DATABASE;
 
     MailerModule.forRootAsync({
       useFactory: () => ({
-        transport: 'smtps://user@domain.com:pass@smtp.domain.com',
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: EMAIL_DOMAIN,
+            pass: EMAIL_PASSWORD,
+          },
+        },
         defaults: {
-          from: '"nest-modules" <modules@nestjs.com>',
+          from: 'Test NestJS App <test@gmail.com>',
         },
         template: {
           dir: __dirname + '/templates',
