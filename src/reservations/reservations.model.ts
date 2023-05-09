@@ -15,7 +15,7 @@ export interface ReservationData {
   confirmed: boolean;
   rejected: boolean;
   price: number;
-  fullPaymentMethod: string; //online, cash
+  fullPaymentMethod: string; //online, cash itp.
   fullPaymentStatus: string; //oczekujące, zapłacone itp.
   depositPrice: number; //wysokość zaliczki
   isDepositPaid: boolean; //czy zapłacona zaliczka
