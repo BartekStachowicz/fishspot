@@ -277,7 +277,7 @@ export class ReservationsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_12_HOURS)
+  @Cron(CronExpression.EVERY_HOUR)
   async cleanExpiredReservations() {
     try {
       const lakes: Lake[] = await this.lakeService.findAll();
