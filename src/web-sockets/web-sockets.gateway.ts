@@ -13,8 +13,14 @@ export class DatesGateway {
   server;
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: any): void {
+  handleMessage(@MessageBody() message: any): any {
     this.server.emit('message', message);
+
     console.log(message);
+  }
+
+  @SubscribeMessage('disconnect')
+  handleDisconnect(client: WebSocket): void {
+    console.log(`Client ${client} disconnected.`);
   }
 }
