@@ -153,7 +153,7 @@ export class SpotsService {
               priceDay: 150,
               priceNight: 150,
             },
-            specials: {},
+            specials: [],
           },
           description: 'opis',
           houseSpot: false,
