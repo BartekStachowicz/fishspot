@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -5,7 +6,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
-@WebSocketGateway(8001, { cors: '*' })
+@WebSocketGateway({ cors: '*' })
+@Injectable()
 export class DatesGateway {
   @WebSocketServer()
   server;
