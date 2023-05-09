@@ -13,7 +13,6 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { SpotsModule } from './spots/spots.module';
 import { LakeModule } from './lake/lake.module';
 import { MailModule } from './mail/mail.module';
-import { WebSocketsModule } from './web-sockets/web-sockets.module';
 import { DatesGateway } from './web-sockets/web-sockets.gateway';
 
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
@@ -64,7 +63,6 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
       }),
     }),
     ScheduleModule.forRoot(),
-    WebSocketsModule,
   ],
   controllers: [AppController],
   providers: [AppService, DatesGateway],
