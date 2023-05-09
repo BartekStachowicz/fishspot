@@ -147,11 +147,11 @@ export class SpotsService {
             },
             default: {
               priceDay: 100,
-              priceNigth: 100,
+              priceNight: 100,
             },
             weekend: {
               priceDay: 150,
-              priceNigth: 150,
+              priceNight: 150,
             },
             specials: {},
           },
