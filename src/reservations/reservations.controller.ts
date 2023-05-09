@@ -19,7 +19,7 @@ export class ReservationsController {
   async createNewReservation(
     @Param('lakename') lakeName: string,
     @Body() reservation: ReservationData,
-  ): Promise<ReservationData | null | string[] | boolean> {
+  ): Promise<ReservationData> {
     const newReservation = await this.reservationsService.createNewReservations(
       lakeName,
       reservation,

@@ -14,18 +14,11 @@ export class ReservationsService {
   async createNewReservations(
     lakeName: string,
     reservation: ReservationData,
-  ): Promise<boolean | ReservationData | string[]> {
+  ): Promise<ReservationData> {
     try {
       const lakeForUpdate = await this.lakeService.findByName(lakeName);
       if (!lakeForUpdate)
         throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
-
-      const isAvailable: string[] | boolean = this.checkIfDatesAreAvailable(
-        lakeForUpdate.spots,
-        reservation.data,
-      );
-
-      if (!isAvailable) return isAvailable;
 
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
@@ -52,6 +45,7 @@ export class ReservationsService {
       await this.lakeService.updateLake(updatedLake);
       return newReservation;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Failed to create reservation',
         HttpStatus.INTERNAL_SERVER_ERROR,
