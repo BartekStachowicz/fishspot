@@ -14,6 +14,7 @@ import { SpotsModule } from './spots/spots.module';
 import { LakeModule } from './lake/lake.module';
 import { MailModule } from './mail/mail.module';
 import { WebSocketsModule } from './web-sockets/web-sockets.module';
+import { DatesGateway } from './web-sockets/web-sockets.gateway';
 
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
 const MONGO_DB_USER = process.env.MONGO_DB_USER;
@@ -66,6 +67,6 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
     WebSocketsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DatesGateway],
 })
 export class AppModule {}
