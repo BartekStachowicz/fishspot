@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({ cors: '*' })
 @Injectable()
 export class DatesGateway {
   @WebSocketServer()
-  server;
+  server: Server;
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: any): any {
+  handleMessage(
+    @MessageBody() message: any,
+    @ConnectedSocket() client: Socket,
+  ): any {
     this.server.emit('message', message);
-
+    console.log(client);
     console.log(message);
-  }
-
-  @SubscribeMessage('disconnect')
-  handleDisconnect(client: WebSocket): void {
-    console.log(`Client ${client} disconnected.`);
   }
 }
