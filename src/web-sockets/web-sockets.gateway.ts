@@ -30,7 +30,7 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       spotId: message.spotId,
     };
     const result = this.webSocketsService.setBlockedDates(blockedDates);
-    // console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
+    console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
     this.server.emit('message', result);
   }
 
@@ -42,7 +42,7 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket): void {
     console.log(`New client connected: ${client.id}`);
     const result = this.webSocketsService.afterConntection();
-    console.log(JSON.stringify(result));
+    // console.log(JSON.stringify(result));
     client.emit('connection', result);
   }
 }
