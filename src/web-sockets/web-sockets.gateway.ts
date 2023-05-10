@@ -42,6 +42,6 @@ export class DatesGateway {
   handleConnection(client: Socket): void {
     const result = this.webSocketsService.afterConntection();
     console.log(`New client connected: ${client.id}`);
-    this.server.emit('connection', result);
+    client.emit('connection', result);
   }
 }
