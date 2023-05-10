@@ -25,7 +25,7 @@ let allBlockedDates: BlockedDatesOutput[] = [];
 export class WebSocketsService {
   public setBlockedDates(
     blockedDates: BlockedDatesInput,
-  ): OutputDatesWithSpotsId[] {
+  ): OutputDatesWithSpotsId[] | BlockedDatesOutput[] {
     const index = allBlockedDates.findIndex(
       (date) => date.clientId === blockedDates.clientId,
     );
@@ -59,9 +59,9 @@ export class WebSocketsService {
       }
     }
 
-    const output = this.transformDataForFrontend(allBlockedDates);
-    console.log(JSON.stringify(output));
-    return output;
+    // const output = this.transformDataForFrontend(allBlockedDates);
+    // console.log(JSON.stringify(output));
+    return allBlockedDates;
   }
 
   public clearBlockedDates(clientId: string): void {

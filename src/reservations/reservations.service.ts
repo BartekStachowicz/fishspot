@@ -6,6 +6,7 @@ import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
 import { Spots } from '../spots/spots.model';
+import { pathToFileURL } from 'url';
 
 @Injectable()
 export class ReservationsService {
@@ -217,26 +218,42 @@ export class ReservationsService {
     limit: number,
     filter: string,
     year: string,
-  ): Promise<ReservationData[]> {
+    date: string,
+  ): Promise<ReservationData[] | void> {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
         throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today.getTime() * 24 * 60 * 60 * 1000);
-      const reservations = lake.reservations[year]
-        .filter(
-          (el) =>
-            new Date(el.timestamp) >= today &&
-            new Date(el.timestamp) < tomorrow,
-        )
+      const day = `${new Date(+date * 1000).getDate()}-${
+        new Date(+date * 1000).getMonth() + 1
+      }-${new Date(+date * 1000).getFullYear()}`;
+      console.log(`Podana data: ${day}`);
+
+      let reservations = [];
+      lake.reservations[year].forEach((reservation) => {
+        reservation.data.forEach((resdata) => {
+          if (
+            resdata.dates.some(
+              (d) =>
+                `${new Date(+d * 1000).getDate()}-${
+                  new Date(+d * 1000).getMonth() + 1
+                }-${new Date(+d * 1000).getFullYear()}` === day,
+            )
+          ) {
+            reservations.push(reservation);
+          }
+        });
+      });
+
+      reservations = reservations
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit);
 
+      console.log(reservations);
       if (filter === '') return reservations;
+
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );

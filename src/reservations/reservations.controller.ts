@@ -128,14 +128,16 @@ export class ReservationsController {
     @Query('limit') limit: number,
     @Query('filter') filter: string,
     @Query('year') year: string,
+    @Query('date') date: string,
     @Param('lakename') lakeName: string,
-  ): Promise<ReservationData[]> {
+  ): Promise<ReservationData[] | void> {
     const reservations = await this.reservationsService.getTodaysReservations(
       lakeName,
       +offset,
       +limit,
       filter,
       year,
+      date,
     );
     return reservations;
   }
