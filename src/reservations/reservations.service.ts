@@ -229,7 +229,6 @@ export class ReservationsService {
       const day = `${new Date(+date * 1000).getDate()}-${
         new Date(+date * 1000).getMonth() + 1
       }-${new Date(+date * 1000).getFullYear()}`;
-      console.log(`Podana data: ${day}`);
 
       let reservations = [];
       lake.reservations[year].forEach((reservation) => {
@@ -251,7 +250,6 @@ export class ReservationsService {
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit);
 
-      console.log(reservations);
       if (filter === '') return reservations;
 
       return reservations.filter((el) =>

@@ -15,8 +15,11 @@ export interface BlockedDatesOutput {
 }
 
 export interface OutputDatesWithSpotsId {
-  dates: string[];
   spotId: string;
+  data: {
+    dates: string[];
+    clientId: string;
+  }[];
 }
 
 let allBlockedDates: BlockedDatesOutput[] = [];
@@ -59,9 +62,10 @@ export class WebSocketsService {
       }
     }
 
-    // const output = this.transformDataForFrontend(allBlockedDates);
-    // console.log(JSON.stringify(output));
-    return allBlockedDates;
+    const output = this.transformDataForFrontend(allBlockedDates);
+    console.log(JSON.stringify(output));
+
+    return output;
   }
 
   public clearBlockedDates(clientId: string): void {
@@ -73,23 +77,15 @@ export class WebSocketsService {
   private transformDataForFrontend(
     allBlockedDates: BlockedDatesOutput[],
   ): OutputDatesWithSpotsId[] {
-    const outputMap = new Map<string, string[]>();
-
-    for (const dates of allBlockedDates) {
-      for (const data of dates.data) {
-        const existingDates = outputMap.get(data.spotId) || [];
-        const newDates = [
-          ...existingDates,
-          ...data.dates.filter((date) => !existingDates.includes(date)),
-        ];
-        outputMap.set(data.spotId, newDates);
-      }
-    }
-
-    const output: OutputDatesWithSpotsId[] = [];
-    for (const [spotId, dates] of outputMap) {
-      output.push({ spotId, dates });
-    }
+    const output: OutputDatesWithSpotsId[] = allBlockedDates.map(
+      (blockedDates, index) => ({
+        spotId: blockedDates.data[index].spotId,
+        data: blockedDates.data.map((data) => ({
+          dates: data.dates,
+          clientId: blockedDates.clientId,
+        })),
+      }),
+    );
 
     return output;
   }
