@@ -68,9 +68,9 @@ export class WebSocketsService {
     return output;
   }
 
-  public afterConntection() {
-    return this.transformDataForFrontend(allBlockedDates);
-  }
+  //   public afterConntection() {
+  //     return this.transformDataForFrontend(allBlockedDates);
+  //   }
 
   public clearBlockedDates(clientId: string): void {
     allBlockedDates = allBlockedDates.filter(
