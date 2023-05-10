@@ -28,9 +28,14 @@ let allBlockedDates: BlockedDatesOutput[] = [];
 export class WebSocketsService {
   public setBlockedDates(
     blockedDates: BlockedDatesInput,
+    message: any,
   ): OutputDatesWithSpotsId[] | BlockedDatesOutput[] {
     try {
-      if (!blockedDates) return this.transformDataForFrontend(allBlockedDates);
+      if (!message) {
+        console.log('pusta');
+        console.log(allBlockedDates);
+        return this.transformDataForFrontend(allBlockedDates);
+      }
 
       const index = allBlockedDates.findIndex(
         (date) => date.clientId === blockedDates.clientId,
@@ -64,9 +69,9 @@ export class WebSocketsService {
           }
         }
       }
-
+      console.log('pełna');
       const output = this.transformDataForFrontend(allBlockedDates);
-      // console.log(JSON.stringify(output));
+      console.log(JSON.stringify(output));
 
       return output;
     } catch (error) {

@@ -24,13 +24,17 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() message: { date: string; spotId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    console.log(`MESSAGE: ${message}`);
+    // console.log(`MESSAGE: ${!message ? 'pusta' : 'pełna'}`);
+
     const blockedDates: BlockedDatesInput = {
       clientId: client.id,
       date: message.date,
       spotId: message.spotId,
     };
-    const result = this.webSocketsService.setBlockedDates(blockedDates);
+    const result = this.webSocketsService.setBlockedDates(
+      blockedDates,
+      message,
+    );
     // console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
     this.server.emit('message', result);
   }
