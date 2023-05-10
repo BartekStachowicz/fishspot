@@ -300,14 +300,17 @@ export class ReservationsService {
       lakes.forEach((lake) => {
         Object.values(lake.reservations).forEach((year) => {
           year.forEach((reservation) => {
-            const twoDaysAgo = new Date(reservation.timestamp);
-            twoDaysAgo.setDate(twoDaysAgo.getDate() + 2);
+            const reservationDay = new Date(+reservation.timestamp * 1000);
+            // console.log(`DATA REZERWACJI ${index}: ${reservationDay}`);
+            const twoDaysLater = new Date(reservationDay.getTime());
+            twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+            // console.log(`DWA DNI PÓŹNIEJ ${index}: ${twoDaysLater}`);
             if (
               !reservation.confirmed &&
               !reservation.isDepositPaid &&
               !reservation.isDepositRequired
             ) {
-              if (twoDaysAgo < new Date()) {
+              if (twoDaysLater < new Date()) {
                 this.deleteReservation(lake.name, reservation.id);
               }
             }
