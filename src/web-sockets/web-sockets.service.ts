@@ -75,18 +75,32 @@ export class WebSocketsService {
   }
 
   private transformDataForFrontend(
-    allBlockedDates: BlockedDatesOutput[],
+    blockedDatesOutput: BlockedDatesOutput[],
   ): OutputDatesWithSpotsId[] {
-    const output: OutputDatesWithSpotsId[] = allBlockedDates.map(
-      (blockedDates, index) => ({
-        spotId: blockedDates.data[index].spotId,
-        data: blockedDates.data.map((data) => ({
-          dates: data.dates,
-          clientId: blockedDates.clientId,
-        })),
-      }),
-    );
+    const result = [];
 
-    return output;
+    // tworzenie mapy z kluczem spotId i wartością tablicy obiektów
+    const spotMap = {};
+    blockedDatesOutput.forEach((client) => {
+      client.data.forEach((booking) => {
+        if (!spotMap[booking.spotId]) {
+          spotMap[booking.spotId] = [];
+        }
+        spotMap[booking.spotId].push({
+          dates: booking.dates,
+          clientId: client.clientId,
+        });
+      });
+    });
+
+    // przekształcanie mapy na listę obiektów wynikowych
+    Object.keys(spotMap).forEach((spotId) => {
+      result.push({
+        spotId,
+        data: spotMap[spotId],
+      });
+    });
+
+    return result;
   }
 }

@@ -6,7 +6,6 @@ import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
 import { Spots } from '../spots/spots.model';
-import { pathToFileURL } from 'url';
 
 @Injectable()
 export class ReservationsService {
