@@ -63,14 +63,14 @@ export class WebSocketsService {
     }
 
     const output = this.transformDataForFrontend(allBlockedDates);
-    console.log(JSON.stringify(output));
+    // console.log(JSON.stringify(output));
 
     return output;
   }
 
-  //   public afterConntection() {
-  //     return this.transformDataForFrontend(allBlockedDates);
-  //   }
+  public afterConntection() {
+    return this.transformDataForFrontend(allBlockedDates);
+  }
 
   public clearBlockedDates(clientId: string): void {
     allBlockedDates = allBlockedDates.filter(
