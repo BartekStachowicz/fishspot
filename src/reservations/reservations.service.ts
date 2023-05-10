@@ -155,7 +155,7 @@ export class ReservationsService {
         throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
       const reservations = lake.reservations[year]
         .filter((reservation) => reservation.confirmed)
-        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
@@ -196,7 +196,7 @@ export class ReservationsService {
 
       const resultReservations = spotsWithReservations
         .filter((reservation) => reservation.confirmed)
-        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit);
 
       if (filter === '') return resultReservations;
@@ -246,7 +246,7 @@ export class ReservationsService {
       });
 
       reservations = reservations
-        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit);
 
       if (filter === '') return reservations;
@@ -277,7 +277,7 @@ export class ReservationsService {
       if (year === '') year = currentYear;
       const reservations = lake.reservations[year]
         .filter((el) => el.isDepositPaid)
-        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
