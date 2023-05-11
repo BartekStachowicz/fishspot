@@ -44,28 +44,20 @@ export class MailService {
   private rejectedText1 =
     'Twoja rezerwacja została odrzucona. Przepraszamy za utrudnienia!';
 
-  async prepareAndSendEmail(
-    reservationData: ReservationData | null,
-    status: string,
-  ) {
+  async prepareAndSendEmail(reservationData: ReservationData, status: string) {
     let mailContent: MailContent;
 
-    let name: string;
-    let date: string;
-
-    if (reservationData !== null) {
-      name = reservationData.fullName.split(' ')[0];
-      date = `${new Date(+reservationData.timestamp * 1000)
-        .getDate()
-        .toString()
-        .padStart(2, '0')}-${(
-        new Date(+reservationData.timestamp * 1000).getMonth() + 1
-      )
-        .toString()
-        .padStart(2, '0')}-${new Date(
-        +reservationData.timestamp * 1000,
-      ).getFullYear()}`;
-    }
+    const name = reservationData.fullName.split(' ')[0];
+    const date = `${new Date(+reservationData.timestamp * 1000)
+      .getDate()
+      .toString()
+      .padStart(2, '0')}-${(
+      new Date(+reservationData.timestamp * 1000).getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}-${new Date(
+      +reservationData.timestamp * 1000,
+    ).getFullYear()}`;
 
     switch (status) {
       case 'pending':
@@ -98,12 +90,12 @@ export class MailService {
         break;
       case 'rejected':
         mailContent = {
-          id: '',
-          name: '',
-          fullName: '',
-          phone: '',
-          timestamp: '',
-          confirmed: 'false',
+          id: reservationData.id,
+          name: name,
+          fullName: reservationData.fullName,
+          phone: reservationData.phone,
+          timestamp: date,
+          confirmed: '',
           header: this.rejected,
           textAfterHeader1: this.rejectedText1,
           textAfterHeader2: '',

@@ -174,8 +174,11 @@ export class ReservationsController {
     @Param('lakename') lakeName: string,
     @Param('id') id: string,
   ) {
-    await this.reservationsService.deleteReservation(lakeName, id);
-    this.mailService.prepareAndSendEmail(null, 'rejected');
+    const reservation = await this.reservationsService.deleteReservation(
+      lakeName,
+      id,
+    );
+    this.mailService.prepareAndSendEmail(reservation, 'rejected');
   }
 
   // @Delete('clear')

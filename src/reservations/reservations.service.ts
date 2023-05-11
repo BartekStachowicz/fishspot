@@ -325,7 +325,10 @@ export class ReservationsService {
     }
   }
 
-  async deleteReservation(lakeName: string, id: string): Promise<void> {
+  async deleteReservation(
+    lakeName: string,
+    id: string,
+  ): Promise<ReservationData> {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
@@ -335,6 +338,8 @@ export class ReservationsService {
       lake.reservations[year] = lake.reservations[year].filter(
         (el) => el.id !== id,
       );
+      const result = await this.getReservationByID(lakeName, id);
+
       data.forEach(({ dates, spotId }) => {
         const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
         if (spotToUpdate && spotToUpdate.unavailableDates) {
@@ -348,6 +353,7 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
+      return result;
     } catch (error) {
       throw new HttpException(
         'Failed to delete reservation',
