@@ -10,7 +10,7 @@ export interface MailContent {
   fullName: string;
   phone: string;
   timestamp: string;
-  confirmed: boolean;
+  confirmed: string;
   header: string;
   textAfterHeader1: string;
   textAfterHeader2: string;
@@ -69,7 +69,7 @@ export class MailService {
           fullName: reservationData.fullName,
           phone: reservationData.phone,
           timestamp: date,
-          confirmed: reservationData.confirmed,
+          confirmed: 'Oczekująca',
           header: this.pending,
           textAfterHeader1: this.pendingText1,
           textAfterHeader2: this.pendingText2,
@@ -83,7 +83,7 @@ export class MailService {
           fullName: reservationData.fullName,
           phone: reservationData.phone,
           timestamp: date,
-          confirmed: reservationData.confirmed,
+          confirmed: 'Potwierdzona',
           header: this.confirmed,
           textAfterHeader1: this.confirmedText1,
           textAfterHeader2: '',
@@ -97,7 +97,7 @@ export class MailService {
           fullName: '',
           phone: '',
           timestamp: '',
-          confirmed: false,
+          confirmed: 'false',
           header: this.rejected,
           textAfterHeader1: this.rejectedText1,
           textAfterHeader2: '',
