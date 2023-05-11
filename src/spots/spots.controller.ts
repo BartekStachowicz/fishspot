@@ -1,17 +1,27 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { SpotsService } from './spots.service';
 import { SpotOptions, Spots, SpotsInfo } from './spots.model';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('spots')
 export class SpotsController {
   constructor(private spotsService: SpotsService) {}
 
+  @UseGuards(JwtGuard)
   @Post('regenerate-spotid/:lakename')
   async regenerateSpotId(@Param('lakename') lakeName: string): Promise<void> {
     await this.spotsService.regenerateSpotId(lakeName);
   }
-
+  @UseGuards(JwtGuard)
   @Post('new-spot/:lakename')
   async addNewSpot(
     @Param('lakename') lakeName: string,
@@ -20,7 +30,7 @@ export class SpotsController {
     const id = await this.spotsService.addNewSpot(lakeName, spot);
     return id;
   }
-
+  @UseGuards(JwtGuard)
   @Post('update-spot/:lakename')
   async updateSpot(
     @Param('lakename') lakeName: string,
@@ -44,7 +54,7 @@ export class SpotsController {
 
     return spot;
   }
-
+  @UseGuards(JwtGuard)
   @Delete('delete-spot/:lakename/:id')
   async deleteSpot(
     @Param('lakename') lakeName: string,

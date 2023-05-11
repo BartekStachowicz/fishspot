@@ -14,7 +14,7 @@ export class LakeController {
   async createNewLake(@Body() lake: Lake): Promise<Lake> {
     return await this.lakeService.createNewLake(lake);
   }
-
+  @UseGuards(JwtGuard)
   @Post('generate/:lakename/:numberOfSpots')
   async generateNewLake(
     @Param('lakename') lakeName: string,

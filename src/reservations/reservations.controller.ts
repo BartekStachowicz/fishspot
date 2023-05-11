@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { ReservationsService } from './reservations.service';
 import { ReservationData } from './reservations.model';
+import { JwtGuard } from '../auth/jwt.guard';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -26,7 +28,7 @@ export class ReservationsController {
     );
     return newReservation;
   }
-
+  @UseGuards(JwtGuard)
   @Post(':lakename/:id')
   async confirmReservation(
     @Param('lakename') lakeName: string,
@@ -36,7 +38,7 @@ export class ReservationsController {
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
     return updatedReservation;
   }
-
+  @UseGuards(JwtGuard)
   @Post('update/:lakename/:id')
   async updateReservation(
     @Param('lakename') lakeName: string,
@@ -62,7 +64,7 @@ export class ReservationsController {
     );
     return reservation;
   }
-
+  @UseGuards(JwtGuard)
   @Get('not-confirmed/:lakename')
   async getNotConfirmedReservations(
     @Query('offset') offset: number,
@@ -81,7 +83,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-
+  @UseGuards(JwtGuard)
   @Get('confirmed/:lakename/:year')
   async getAllReservationsByYear(
     @Query('offset') offset: number,
@@ -100,7 +102,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-
+  @UseGuards(JwtGuard)
   @Get('byspots/:lakename/:spotId')
   async getReservationsBySpotsId(
     @Query('offset') offset: number,
@@ -121,7 +123,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-
+  @UseGuards(JwtGuard)
   @Get('todays/:lakename')
   async getTodaysReservations(
     @Query('offset') offset: number,
@@ -141,7 +143,7 @@ export class ReservationsController {
     );
     return reservations;
   }
-
+  @UseGuards(JwtGuard)
   @Get('deposit-paid/:lakename')
   async getReservationsWithPaidDeposit(
     @Query('offset') offset: number,
@@ -160,7 +162,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-
+  @UseGuards(JwtGuard)
   @Delete('delete/:lakename/:id')
   async deleteReservation(
     @Param('lakename') lakeName: string,
