@@ -42,7 +42,7 @@ export class MailService {
 
   private rejected = 'Rezerwacja została odrzucona!';
   private rejectedText1 =
-    'Twoja rezerwacja została odrzucona. Przepraszamy za utrudnienia!';
+    'Twoja rezerwacja została odrzucona. Przepraszamy za utrudnienia.';
 
   async prepareAndSendEmail(reservationData: ReservationData, status: string) {
     let mailContent: MailContent;
