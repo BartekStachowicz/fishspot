@@ -95,7 +95,7 @@ export class MailService {
           fullName: reservationData.fullName,
           phone: reservationData.phone,
           timestamp: date,
-          confirmed: '',
+          confirmed: 'Odrzucona',
           header: this.rejected,
           textAfterHeader1: this.rejectedText1,
           textAfterHeader2: '',
