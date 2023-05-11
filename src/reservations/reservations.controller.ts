@@ -181,8 +181,8 @@ export class ReservationsController {
     this.mailService.prepareAndSendEmail(reservation, 'rejected');
   }
 
-  // @Delete('clear')
-  // async cleaner() {
-  //   await this.reservationsService.cleanExpiredReservations();
-  // }
+  @Delete('clear')
+  async cleaner() {
+    await this.reservationsService.cleanExpiredReservations();
+  }
 }
