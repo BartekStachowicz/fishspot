@@ -49,17 +49,23 @@ export class MailService {
     status: string,
   ) {
     let mailContent: MailContent;
-    const name = reservationData.fullName.split(' ')[0];
-    const date = `${new Date(+reservationData.timestamp * 1000)
-      .getDate()
-      .toString()
-      .padStart(2, '0')}-${(
-      new Date(+reservationData.timestamp * 1000).getMonth() + 1
-    )
-      .toString()
-      .padStart(2, '0')}-${new Date(
-      +reservationData.timestamp * 1000,
-    ).getFullYear()}`;
+
+    let name: string;
+    let date: string;
+
+    if (reservationData !== null) {
+      name = reservationData.fullName.split(' ')[0];
+      date = `${new Date(+reservationData.timestamp * 1000)
+        .getDate()
+        .toString()
+        .padStart(2, '0')}-${(
+        new Date(+reservationData.timestamp * 1000).getMonth() + 1
+      )
+        .toString()
+        .padStart(2, '0')}-${new Date(
+        +reservationData.timestamp * 1000,
+      ).getFullYear()}`;
+    }
 
     switch (status) {
       case 'pending':
