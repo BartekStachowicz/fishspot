@@ -12,10 +12,14 @@ import {
 import { ReservationsService } from './reservations.service';
 import { ReservationData } from './reservations.model';
 import { JwtGuard } from '../auth/jwt.guard';
+import { MailService } from 'src/mails/mails.service';
 
 @Controller('reservations')
 export class ReservationsController {
-  constructor(private reservationsService: ReservationsService) {}
+  constructor(
+    private reservationsService: ReservationsService,
+    private mailService: MailService,
+  ) {}
 
   @Post(':lakename')
   async createNewReservation(
@@ -26,6 +30,7 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
+    this.mailService.prepareAndSendEmail(newReservation, 'pending');
     return newReservation;
   }
   @UseGuards(JwtGuard)
@@ -36,6 +41,7 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
+    this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
   @UseGuards(JwtGuard)
@@ -169,6 +175,7 @@ export class ReservationsController {
     @Param('id') id: string,
   ) {
     await this.reservationsService.deleteReservation(lakeName, id);
+    this.mailService.prepareAndSendEmail(null, 'rejected');
   }
 
   // @Delete('clear')
