@@ -39,7 +39,7 @@ export class SpotsController {
     const updatedSpot = await this.spotsService.updateSpot(lakeName, spot);
     return updatedSpot;
   }
-
+  @UseGuards(JwtGuard)
   @Get('get-spot/:lakename/:id')
   async getSpotById(
     @Param('lakename') lakeName: string,

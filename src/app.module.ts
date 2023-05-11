@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -12,8 +10,9 @@ import { UsersModule } from './users/users.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { SpotsModule } from './spots/spots.module';
 import { LakeModule } from './lake/lake.module';
-import { MailModule } from './mail/mail.module';
 import { WebSocketsModule } from './web-sockets/web-sockets.module';
+import { MailService } from './mail/mail.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD;
 const MONGO_DB_USER = process.env.MONGO_DB_USER;
@@ -37,8 +36,8 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
     LakeModule,
 
-    MailModule,
-
+    ScheduleModule.forRoot(),
+    WebSocketsModule,
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: {
@@ -49,23 +48,14 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
             user: EMAIL_DOMAIN,
             pass: EMAIL_PASSWORD,
           },
-        },
-        defaults: {
-          from: 'Test NestJS App <test@gmail.com>',
-        },
-        template: {
-          dir: __dirname + '/templates',
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
+          tls: {
+            rejectUnauthorized: false,
           },
         },
       }),
     }),
-    ScheduleModule.forRoot(),
-    WebSocketsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MailService],
 })
 export class AppModule {}
