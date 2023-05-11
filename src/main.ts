@@ -5,7 +5,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     allowedHeaders: '*',
-    origin: '*',
+    origin: 'https://fish-spot.vercel.app',
     credentials: true,
   });
   app.setGlobalPrefix('api');
