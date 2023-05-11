@@ -203,7 +203,8 @@
                                         style='margin: 0; font-size: 14px; text-align: center; mso-line-height-alt: 16.8px;'
                                       ><span style='font-size:42px;'><span
                                             style='font-size:38px;'
-                                          ><strong>{{mailContent.header}}</strong></span><br
+                                          ><strong
+                                            >{{mailContent.header}}</strong></span><br
                                           /></span></p>
                                     </div>
                                   </div>
@@ -232,7 +233,8 @@
                                       <p
                                         style='margin: 0; font-size: 20px; text-align: center; mso-line-height-alt: 36px;'
                                       ><span style='font-size:24px;'><strong
-                                          >Cześć {{mailContent.name}}!</strong></span></p>
+                                          >Cześć
+                                            {{mailContent.name}}!</strong></span></p>
                                       <p
                                         style='margin: 0; font-size: 20px; text-align: center; mso-line-height-alt: 30px;'
                                       ><strong><span
@@ -240,7 +242,9 @@
                                           >{{mailContent.textAfterHeader1}}</span></strong></p>
                                       <p
                                         style='margin: 0; font-size: 20px; text-align: center; mso-line-height-alt: 30px;'
-                                      ><strong><span style='font-size:20px;'>{{mailContent.textAfterHeader2}}</span></strong></p>
+                                      ><strong><span
+                                            style='font-size:20px;'
+                                          >{{mailContent.textAfterHeader2}}</span></strong></p>
                                     </div>
                                   </div>
                                 </td>
@@ -384,15 +388,26 @@
                                       <p
                                         style='margin: 0; mso-line-height-alt: 32px;'
                                       ><span style='font-size:16px;'><strong
-                                          >Data złożenia: {{mailContent.date}}</strong></span></p>
+                                          >Data złożenia:
+                                            {{mailContent.date}}</strong></span></p>
                                       <p
                                         style='margin: 0; mso-line-height-alt: 32px;'
                                       ><span style='font-size:16px;'><strong
-                                          >Status: {{mailContent.confirmed ? 'Potwierdzona' : 'Niepotwierdzona'}}</strong></span></p>
+                                          >Status:
+                                            {{mailContent.confirmed
+                                              ?
+                                              'Potwierdzona'
+                                              :
+                                              'Niepotwierdzona'
+                                            }}</strong></span></p>
                                       <p
                                         style='margin: 0; mso-line-height-alt: 32px;'
                                       ><span style='font-size:16px;'><strong
-                                          >Link do rezerwacji: <a href="{{mailContent.domain + mailContent.id}}">Kliknij i przejdź do rezerwacji</a></strong></span></p>
+                                          >Link do rezerwacji:
+                                            <a
+                                              href='{{mailContent.domain}}'
+                                            >Kliknij i przejdź do podglądu
+                                              rezerwacji</a></strong></span></p>
                                       <p
                                         style='margin: 0; mso-line-height-alt: 28px;'
                                       > </p>

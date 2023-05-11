@@ -1,9 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { MailContent } from '../app.controller';
 import { ReservationData } from '../reservations/reservations.model';
 
 const DOMAIN = process.env.DOMAIN;
+
+export interface MailContent {
+  id: string;
+  name: string;
+  fullName: string;
+  phone: string;
+  timestamp: string;
+  confirmed: boolean;
+  header: string;
+  textAfterHeader1: string;
+  textAfterHeader2: string;
+  domain: string;
+}
 
 @Injectable()
 export class MailService {
@@ -61,7 +73,7 @@ export class MailService {
           header: this.pending,
           textAfterHeader1: this.pendingText1,
           textAfterHeader2: this.pendingText2,
-          domain: DOMAIN,
+          domain: DOMAIN + reservationData.id,
         };
         break;
       case 'confirmed':
@@ -75,7 +87,7 @@ export class MailService {
           header: this.confirmed,
           textAfterHeader1: this.confirmedText1,
           textAfterHeader2: '',
-          domain: DOMAIN,
+          domain: DOMAIN + reservationData.id,
         };
         break;
       case 'rejected':
