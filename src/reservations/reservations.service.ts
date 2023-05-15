@@ -29,7 +29,7 @@ export class ReservationsService {
 
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
-      console.log('EMAIL' + reservation.email);
+      console.log('EMAIL' + reservation.email.length);
       const encryptedEmail = this.authService.encrypt(reservation.email);
       const encryptedName = this.authService.encrypt(reservation.fullName);
       const encryptedPhone = this.authService.encrypt(reservation.phone);
