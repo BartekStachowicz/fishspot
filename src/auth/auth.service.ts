@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { createCipheriv, scrypt, createDecipheriv } from 'crypto';
-import { promisify } from 'util';
+import { createCipheriv, createDecipheriv } from 'crypto';
 
 import {
   UserStraightInfo,
@@ -121,14 +120,6 @@ export class AuthService {
         'Hasło lub nazwa użytownika są nieprawidłowe!',
       );
     }
-  }
-
-  async emailEncryption(email: string): Promise<Buffer> {
-    const key = (await promisify(scrypt)(AES_PASSWORD, 'salt', 32)) as Buffer;
-    const cipher = createCipheriv('aes-256-ctr', key, IV_KEY);
-
-    const encryptedText = Buffer.concat([cipher.update(email), cipher.final()]);
-    return encryptedText;
   }
 
   public encryptEmail(email: string) {

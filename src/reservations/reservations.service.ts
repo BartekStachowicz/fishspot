@@ -56,7 +56,7 @@ export class ReservationsService {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Nie można utworzyćrezerwacji!',
+        'Nie można utworzyć rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
