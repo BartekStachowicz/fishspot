@@ -9,14 +9,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
 import { SpotOptions, Spots, SpotsInfo } from './spots.model';
-import { Lake } from '../lake/lake.model';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class SpotsService {
   constructor(
-    @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
     @Inject(forwardRef(() => LakeService)) private lakeService: LakeService,
   ) {}
 
@@ -105,11 +101,8 @@ export class SpotsService {
         };
       });
 
-      const updatedLake: Lake = new this.lakeModel({
-        ...lake.toObject(),
-        spots: updatedSpots,
-      });
-      await this.lakeService.updateLake(updatedLake);
+      lake.spots = updatedSpots;
+      await this.lakeService.updateLake(lake);
       return updatedSpots;
     } catch (error) {
       console.log(error);
