@@ -30,10 +30,14 @@ export class ReservationsService {
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
       const encryptedEmail = this.authService.encrypt(reservation.email);
+      const encryptedName = this.authService.encrypt(reservation.fullName);
+      const encryptedPhone = this.authService.encrypt(reservation.phone);
       const newReservation: ReservationData = {
         ...reservation,
         id: uniqueID,
         email: encryptedEmail,
+        phone: encryptedPhone,
+        fullName: encryptedName,
       };
 
       if (!lakeForUpdate.reservations) {
@@ -76,9 +80,13 @@ export class ReservationsService {
       await this.lakeService.updateLake(lake);
       const reservation = lake.reservations[year].find((el) => el.id === id);
       const email = this.authService.decrypt(reservation.email);
+      const phone = this.authService.decrypt(reservation.phone);
+      const fullName = this.authService.decrypt(reservation.fullName);
       return {
         ...reservation,
         email: email,
+        phone: phone,
+        fullname: fullName,
       };
     } catch (error) {
       throw new HttpException(
@@ -134,9 +142,13 @@ export class ReservationsService {
     try {
       const reservation = await this.findReservationByID(lakeName, id);
       const email = this.authService.decrypt(reservation.email);
+      const phone = this.authService.decrypt(reservation.phone);
+      const fullName = this.authService.decrypt(reservation.fullName);
       return {
         ...reservation,
         email: email,
+        phone: phone,
+        fullName: fullName,
       };
     } catch (error) {
       throw new HttpException(
@@ -168,9 +180,13 @@ export class ReservationsService {
         .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
           return {
             ...r,
             email: email,
+            phone: phone,
+            fullName: fullName,
           };
         });
 
@@ -206,9 +222,13 @@ export class ReservationsService {
         .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
           return {
             ...r,
             email: email,
+            phone: phone,
+            fullName: fullName,
           };
         });
       if (filter === '') return reservations;
@@ -257,9 +277,13 @@ export class ReservationsService {
         .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
           return {
             ...r,
             email: email,
+            phone: phone,
+            fullName: fullName,
           };
         });
 
@@ -317,9 +341,13 @@ export class ReservationsService {
         .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
           return {
             ...r,
             email: email,
+            phone: phone,
+            fullName: fullName,
           };
         });
 
@@ -358,9 +386,13 @@ export class ReservationsService {
         .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
           return {
             ...r,
             email: email,
+            phone: phone,
+            fullName: fullName,
           };
         });
       if (filter === '') return reservations;
@@ -429,6 +461,9 @@ export class ReservationsService {
         (el) => el.id !== id,
       );
       const result = await this.getReservationByID(lakeName, id);
+      const email = this.authService.decrypt(result.email);
+      const phone = this.authService.decrypt(result.phone);
+      const fullName = this.authService.decrypt(result.fullName);
 
       data.forEach(({ dates, spotId }) => {
         const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
@@ -443,7 +478,7 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
-      return result;
+      return { ...result, email: email, phone: phone, fullName: fullName };
     } catch (error) {
       throw new HttpException(
         'Nie można usunuąć rezerwwacji!',
