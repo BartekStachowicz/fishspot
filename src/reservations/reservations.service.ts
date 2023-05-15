@@ -481,7 +481,7 @@ export class ReservationsService {
       return { ...result, email: email, phone: phone, fullName: fullName };
     } catch (error) {
       throw new HttpException(
-        'Nie można usunuąć rezerwwacji!',
+        'Nie można usunąć rezerwwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
