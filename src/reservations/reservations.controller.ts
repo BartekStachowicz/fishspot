@@ -30,7 +30,7 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
-
+    console.log({ ...newReservation, email: reservation.email });
     this.mailService.prepareAndSendEmail(
       { ...newReservation, email: reservation.email },
       'pending',
@@ -45,7 +45,7 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
-
+    console.log(updatedReservation);
     this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
