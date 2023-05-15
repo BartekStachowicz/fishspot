@@ -96,7 +96,11 @@ export class SpotsService {
       const updatedSpots: Spots[] = lake.spots.map((spot) => {
         return {
           ...spot,
-          info: inputData.info,
+          info: {
+            ...spot.info,
+            priceList: inputData.info.priceList,
+            spotCapacity: inputData.info.spotCapacity,
+          },
           options: inputData.options,
         };
       });
