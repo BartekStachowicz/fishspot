@@ -30,7 +30,6 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
-    console.log({ ...newReservation, email: reservation.email });
     this.mailService.prepareAndSendEmail(
       {
         ...newReservation,
@@ -49,7 +48,6 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
-    console.log(updatedReservation);
     this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
@@ -208,6 +206,15 @@ export class ReservationsController {
     );
 
     this.mailService.prepareAndSendEmail(reservation, 'rejected');
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('delete-confirmed/:lakename/:id')
+  async deleteConfirmedReservation(
+    @Param('lakename') lakeName: string,
+    @Param('id') id: string,
+  ) {
+    await this.reservationsService.deleteReservation(lakeName, id);
   }
 
   @Delete('clear')

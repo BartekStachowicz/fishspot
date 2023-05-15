@@ -121,10 +121,16 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       }
+      const resForUpdate = {
+        ...reservationData,
+        email: this.authService.encrypt(reservationData?.email),
+        phone: this.authService.encrypt(reservationData?.phone),
+        fullName: this.authService.encrypt(reservationData?.fullName),
+      };
       const reservationToUpdate = Object.assign(
         {},
         lake.reservations[year][reservationIndex],
-        reservationData,
+        resForUpdate,
       );
       lake.reservations[year][reservationIndex] = reservationToUpdate;
       await this.lakeService.updateLake(lake);
