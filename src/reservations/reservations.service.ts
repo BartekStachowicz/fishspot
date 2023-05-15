@@ -455,16 +455,19 @@ export class ReservationsService {
           'Nie znaleziono łowiska!',
           HttpStatus.NOT_FOUND,
         );
+
       const year = this.getYearFromID(id);
-      const data = (await this.getReservationByID(lakeName, id)).data;
+      const result = await this.getReservationByID(lakeName, id);
+      console.log(result);
+      const data = result.data;
       lake.reservations[year] = lake.reservations[year].filter(
         (el) => el.id !== id,
       );
-      const result = await this.getReservationByID(lakeName, id);
+
       const email = this.authService.decrypt(result.email);
       const phone = this.authService.decrypt(result.phone);
       const fullName = this.authService.decrypt(result.fullName);
-
+      console.log(email, phone, fullName);
       data.forEach(({ dates, spotId }) => {
         const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
         if (spotToUpdate && spotToUpdate.unavailableDates) {
@@ -478,8 +481,7 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
-      console.log(email, phone, fullName);
-      return { ...result, email: email };
+      return { ...result, email: email, phone: phone, fullName: fullName };
     } catch (error) {
       throw new HttpException(
         'Nie można usunąć rezerwwacji!',

@@ -30,10 +30,11 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
-    this.mailService.prepareAndSendEmail(
-      { ...newReservation, email: reservation.email },
-      'pending',
-    );
+    if (newReservation.email !== '')
+      this.mailService.prepareAndSendEmail(
+        { ...newReservation, email: reservation.email },
+        'pending',
+      );
     return newReservation;
   }
   @UseGuards(JwtGuard)
@@ -44,7 +45,8 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
-    this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
+    if (updatedReservation.email !== '')
+      this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
   @UseGuards(JwtGuard)
@@ -181,7 +183,8 @@ export class ReservationsController {
       lakeName,
       id,
     );
-    this.mailService.prepareAndSendEmail(reservation, 'rejected');
+    if (reservation.email !== '')
+      this.mailService.prepareAndSendEmail(reservation, 'rejected');
   }
 
   @Delete('clear')
