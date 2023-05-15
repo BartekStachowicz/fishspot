@@ -103,7 +103,7 @@ export class LakeService {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Lake not found! Cannot get lake info!',
+        'Nie znaleziono łowiska! Nie można pobrać informacji o łowisku!',
         HttpStatus.NOT_FOUND,
       );
     }
@@ -120,7 +120,7 @@ export class LakeService {
     try {
       return this.lakeModel.findOne({ name }).exec();
     } catch {
-      throw new HttpException('Lake not found!', HttpStatus.NOT_FOUND);
+      throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -128,7 +128,7 @@ export class LakeService {
     try {
       return this.lakeModel.find().exec();
     } catch {
-      throw new HttpException('Lake not found!', HttpStatus.NOT_FOUND);
+      throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
     }
   }
 

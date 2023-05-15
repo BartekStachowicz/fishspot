@@ -20,7 +20,10 @@ export class SpotsService {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
-        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       const id = this.buildUniqueID(lakeName, spot.number);
 
       const newSpot: Spots = {
@@ -35,7 +38,7 @@ export class SpotsService {
       return id;
     } catch (error) {
       throw new HttpException(
-        'Failed to add spot',
+        'Nie można dodać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -45,11 +48,17 @@ export class SpotsService {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
-        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       const spotIndex = lake.spots.findIndex((s) => s.spotId === spot.spotId);
 
       if (spotIndex === -1) {
-        throw new Error('Spot not found');
+        throw new HttpException(
+          'Nie można odnaleźć stanowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const updatedSpot: Spots = {
@@ -64,7 +73,7 @@ export class SpotsService {
       return updatedSpot;
     } catch (error) {
       throw new HttpException(
-        'Failed to update spot',
+        'Nie można zaaktualizować stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -74,13 +83,16 @@ export class SpotsService {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
-        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       lake.spots.filter((spot) => spot.spotId !== spotId);
 
       await this.lakeService.updateLake(lake);
     } catch (error) {
       throw new HttpException(
-        'Failed to delete spot',
+        'Nie można usunać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -98,7 +110,10 @@ export class SpotsService {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
-        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       const spotOutput: Spots = lake.spots.find(
         (spot) => spot.spotId === spotId,
       );
@@ -111,7 +126,7 @@ export class SpotsService {
       };
     } catch (error) {
       throw new HttpException(
-        'Failed to get spot',
+        'Nie można pobrać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -123,7 +138,10 @@ export class SpotsService {
     try {
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
-        throw new HttpException('Lake not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
       lake.spots.map((spot) => {
         spot.spotId = this.buildUniqueID(lakeName, spot.number);
       });

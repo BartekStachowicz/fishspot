@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { createCipheriv, scrypt, createDecipheriv } from 'crypto';
+import { promisify } from 'util';
 
 import {
   UserStraightInfo,
@@ -11,6 +13,8 @@ import {
 import { UsersService } from '../users/users.service';
 
 const KEY = process.env.SECRET_KEY;
+const AES_PASSWORD = process.env.AES_PASSWORD;
+const IV_KEY = process.env.IV_KEY;
 
 @Injectable()
 export class AuthService {
@@ -113,7 +117,39 @@ export class AuthService {
         username: foundUser.username,
       };
     } catch {
-      throw new UnauthorizedException('Password or username are invalid!');
+      throw new UnauthorizedException(
+        'Hasło lub nazwa użytownika są nieprawidłowe!',
+      );
     }
+  }
+
+  async emailEncryption(email: string): Promise<Buffer> {
+    const key = (await promisify(scrypt)(AES_PASSWORD, 'salt', 32)) as Buffer;
+    const cipher = createCipheriv('aes-256-ctr', key, IV_KEY);
+
+    const encryptedText = Buffer.concat([cipher.update(email), cipher.final()]);
+    return encryptedText;
+  }
+
+  public encryptEmail(email: string) {
+    const cipher = createCipheriv(
+      'aes-256-ctr',
+      Buffer.from(AES_PASSWORD),
+      IV_KEY,
+    );
+    let encrypted = cipher.update(email);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString('hex');
+  }
+
+  public decryptEmail(encryptedEmail: string) {
+    const decipher = createDecipheriv(
+      'aes-256-ctr',
+      Buffer.from(AES_PASSWORD),
+      IV_KEY,
+    );
+    let decrypted = decipher.update(Buffer.from(encryptedEmail, 'hex'));
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
   }
 }
