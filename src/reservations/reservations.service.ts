@@ -36,7 +36,7 @@ export class ReservationsService {
       const newReservation: ReservationData = {
         ...reservation,
         id: uniqueID,
-        email: reservation.email.length === 0 ? '' : encryptedEmail,
+        email: encryptedEmail,
         phone: encryptedPhone,
         fullName: encryptedName,
       };
