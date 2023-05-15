@@ -150,9 +150,9 @@ export class ReservationsService {
   ): Promise<ReservationData> {
     try {
       const reservation = await this.findReservationByID(lakeName, id);
-      const email = this.authService.decrypt(reservation?.email);
-      const phone = this.authService.decrypt(reservation?.phone);
-      const fullName = this.authService.decrypt(reservation?.fullName);
+      const email = this.authService.decrypt(reservation.email);
+      const phone = this.authService.decrypt(reservation.phone);
+      const fullName = this.authService.decrypt(reservation.fullName);
       return {
         ...reservation,
         email: email,
