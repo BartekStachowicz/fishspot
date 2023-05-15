@@ -478,6 +478,7 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
+      console.log(email, phone, fullName);
       return { ...result, email: email, phone: phone, fullName: fullName };
     } catch (error) {
       throw new HttpException(
