@@ -175,7 +175,11 @@ export class ReservationsService {
         );
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
+
       const reservations = lake.reservations[year]
+        .filter((reservation) => !reservation.confirmed)
+        .sort((a, b) => +a.timestamp - +b.timestamp)
+        .slice(offset, offset + limit)
         .map((r) => {
           const email = this.authService.decrypt(r.email);
           const phone = this.authService.decrypt(r.phone);
@@ -186,16 +190,13 @@ export class ReservationsService {
             phone: phone,
             fullName: fullName,
           };
-        })
-        .filter((reservation) => !reservation.confirmed)
-        .sort((a, b) => +a.timestamp - +b.timestamp)
-        .slice(offset, offset + limit);
-
+        });
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,

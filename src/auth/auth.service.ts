@@ -137,6 +137,7 @@ export class AuthService {
     const [iv, encrypted] = text
       .split(':')
       .map((hex) => Buffer.from(hex, 'hex'));
+
     const decipher = createDecipheriv(
       'aes-256-cbc',
       Buffer.from(AES_PASSWORD),
