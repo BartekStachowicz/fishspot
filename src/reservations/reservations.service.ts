@@ -87,7 +87,7 @@ export class ReservationsService {
         ...reservation,
         email: email,
         phone: phone,
-        fullname: fullName,
+        fullName: fullName,
       };
     } catch (error) {
       throw new HttpException(
@@ -177,13 +177,13 @@ export class ReservationsService {
       if (year === '') year = currentYear;
 
       const reservations = lake.reservations[year]
-        .filter((reservation) => !reservation.confirmed)
+        .filter((reservation) => !reservation?.confirmed)
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
