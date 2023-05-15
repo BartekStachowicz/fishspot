@@ -365,6 +365,49 @@ export class ReservationsService {
     }
   }
 
+  async getReservationsWithRequireDeposit(
+    lakeName: string,
+    offset: number,
+    limit: number,
+    filter: string,
+    year: string,
+  ) {
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+      const reservations = lake.reservations[year]
+        .filter((el) => !el.isDepositPaid)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
+        .slice(offset, offset + limit)
+        .map((r) => {
+          const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
+          return {
+            ...r,
+            email: email,
+            phone: phone,
+            fullName: fullName,
+          };
+        });
+      if (filter === '') return reservations;
+      return reservations.filter((el) =>
+        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Nie można pobrać rezerwacji!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getReservationsWithPaidDeposit(
     lakeName: string,
     offset: number,
