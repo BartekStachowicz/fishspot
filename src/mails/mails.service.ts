@@ -29,7 +29,7 @@ export class MailService {
     context: { mailContent: MailContent };
   }): Promise<void> {
     try {
-      console.log(input.to);
+      console.log('EMAIL ' + input.to + 'length ' + input.to.length);
       await this.mailerService.sendMail(input);
     } catch (error) {
       throw new HttpException(

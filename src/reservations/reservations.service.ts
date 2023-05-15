@@ -116,7 +116,7 @@ export class ReservationsService {
       );
       if (reservationIndex === -1) {
         throw new HttpException(
-          'Nie znaleziono łowiska!',
+          'Nie znaleziono rezerwacji!',
           HttpStatus.NOT_FOUND,
         );
       }
