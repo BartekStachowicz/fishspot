@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { createCipheriv, createDecipheriv } from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 import {
   UserStraightInfo,
@@ -13,7 +13,7 @@ import { UsersService } from '../users/users.service';
 
 const KEY = process.env.SECRET_KEY;
 const AES_PASSWORD = process.env.AES_PASSWORD;
-const IV_KEY = process.env.IV_KEY;
+const IV_KEY = randomBytes(16);
 
 @Injectable()
 export class AuthService {
@@ -122,24 +122,27 @@ export class AuthService {
     }
   }
 
-  public encryptEmail(email: string) {
+  encrypt(text: string): string {
     const cipher = createCipheriv(
-      'aes-256-ctr',
+      'aes-256-cbc',
       Buffer.from(AES_PASSWORD),
       IV_KEY,
     );
-    let encrypted = cipher.update(email);
+    let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return encrypted.toString('hex');
+    return `${IV_KEY.toString('hex')}:${encrypted.toString('hex')}`;
   }
 
-  public decryptEmail(encryptedEmail: string) {
+  decrypt(text: string): string {
+    const [iv, encrypted] = text
+      .split(':')
+      .map((hex) => Buffer.from(hex, 'hex'));
     const decipher = createDecipheriv(
-      'aes-256-ctr',
+      'aes-256-cbc',
       Buffer.from(AES_PASSWORD),
-      IV_KEY,
+      iv,
     );
-    let decrypted = decipher.update(Buffer.from(encryptedEmail, 'hex'));
+    let decrypted = decipher.update(encrypted);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   }

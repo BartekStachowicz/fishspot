@@ -29,7 +29,7 @@ export class ReservationsService {
 
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
-      const encryptedEmail = this.authService.encryptEmail(reservation.email);
+      const encryptedEmail = this.authService.encrypt(reservation.email);
       const newReservation: ReservationData = {
         ...reservation,
         id: uniqueID,
@@ -75,7 +75,7 @@ export class ReservationsService {
       lake.reservations[year].find((el) => el.id === id).confirmed = true;
       await this.lakeService.updateLake(lake);
       const reservation = lake.reservations[year].find((el) => el.id === id);
-      const email = this.authService.decryptEmail(reservation.email);
+      const email = this.authService.decrypt(reservation.email);
       return {
         ...reservation,
         email: email,
@@ -132,7 +132,7 @@ export class ReservationsService {
     id: string,
   ): Promise<ReservationData> {
     const reservation = await this.findReservationByID(lakeName, id);
-    const email = this.authService.decryptEmail(reservation.email);
+    const email = this.authService.decrypt(reservation.email);
     return {
       ...reservation,
       email: email,
@@ -160,7 +160,7 @@ export class ReservationsService {
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decryptEmail(r.email);
+          const email = this.authService.decrypt(r.email);
           return {
             ...r,
             email: email,
@@ -198,7 +198,7 @@ export class ReservationsService {
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decryptEmail(r.email);
+          const email = this.authService.decrypt(r.email);
           return {
             ...r,
             email: email,
@@ -249,7 +249,7 @@ export class ReservationsService {
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decryptEmail(r.email);
+          const email = this.authService.decrypt(r.email);
           return {
             ...r,
             email: email,
@@ -309,7 +309,7 @@ export class ReservationsService {
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decryptEmail(r.email);
+          const email = this.authService.decrypt(r.email);
           return {
             ...r,
             email: email,
@@ -350,7 +350,7 @@ export class ReservationsService {
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decryptEmail(r.email);
+          const email = this.authService.decrypt(r.email);
           return {
             ...r,
             email: email,
