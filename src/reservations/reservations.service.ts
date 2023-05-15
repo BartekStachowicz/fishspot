@@ -186,7 +186,10 @@ export class ReservationsService {
       if (year === '') year = currentYear;
 
       const reservations = lake.reservations[year]
-        .filter((reservation) => !reservation?.confirmed)
+        .filter(
+          (reservation) =>
+            !reservation?.confirmed && !reservation?.isDepositRequired,
+        )
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
