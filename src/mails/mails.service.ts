@@ -29,7 +29,6 @@ export class MailService {
     context: { mailContent: MailContent };
   }): Promise<void> {
     try {
-      console.log('EMAIL ' + input.to + 'length ' + input.to.length);
       await this.mailerService.sendMail(input);
     } catch (error) {
       throw new HttpException(
@@ -122,8 +121,7 @@ export class MailService {
         template: 'fishspot',
         context: { mailContent: mailContent },
       };
-
-      await this.sendEmail(config);
+      if (reservationData.email.length !== 0) await this.sendEmail(config);
     } catch (error) {
       throw new HttpException(
         'Nie można przygotować wiadomości email!',
