@@ -449,6 +449,7 @@ export class ReservationsService {
     id: string,
   ): Promise<ReservationData> {
     try {
+      console.log(lakeName, id);
       const lake = await this.lakeService.findByName(lakeName);
       if (!lake)
         throw new HttpException(
