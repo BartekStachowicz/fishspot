@@ -449,8 +449,8 @@ export class ReservationsService {
     id: string,
   ): Promise<ReservationData> {
     try {
-      console.log(lakeName, id);
       const lake = await this.lakeService.findByName(lakeName);
+
       if (!lake)
         throw new HttpException(
           'Nie znaleziono łowiska!',
@@ -459,16 +459,12 @@ export class ReservationsService {
 
       const year = this.getYearFromID(id);
       const result = await this.getReservationByID(lakeName, id);
-      console.log(result);
+
       const data = result.data;
       lake.reservations[year] = lake.reservations[year].filter(
         (el) => el.id !== id,
       );
 
-      const email = this.authService.decrypt(result.email);
-      const phone = this.authService.decrypt(result.phone);
-      const fullName = this.authService.decrypt(result.fullName);
-      console.log(email, phone, fullName);
       data.forEach(({ dates, spotId }) => {
         const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
         if (spotToUpdate && spotToUpdate.unavailableDates) {
@@ -482,10 +478,10 @@ export class ReservationsService {
       });
 
       await this.lakeService.updateLake(lake);
-      return { ...result, email: email, phone: phone, fullName: fullName };
+      return result;
     } catch (error) {
       throw new HttpException(
-        'Nie można usunąć rezerwwacji!',
+        'Nie można usunąć rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
