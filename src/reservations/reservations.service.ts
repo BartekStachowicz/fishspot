@@ -176,20 +176,20 @@ export class ReservationsService {
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
       const reservations = lake.reservations[year]
+        .map((r) => {
+          const email = this.authService.decrypt(r.email);
+          const phone = this.authService.decrypt(r.phone);
+          const fullName = this.authService.decrypt(r.fullName);
+          return {
+            ...r,
+            email: email,
+            phone: phone,
+            fullName: fullName,
+          };
+        })
         .filter((reservation) => !reservation.confirmed)
         .sort((a, b) => +a.timestamp - +b.timestamp)
         .slice(offset, offset + limit);
-      // .map((r) => {
-      //   const email = this.authService.decrypt(r.email);
-      //   const phone = this.authService.decrypt(r.phone);
-      //   const fullName = this.authService.decrypt(r.fullName);
-      //   return {
-      //     ...r,
-      //     email: email,
-      //     phone: phone,
-      //     fullName: fullName,
-      //   };
-      // });
 
       if (filter === '') return reservations;
       return reservations.filter((el) =>
