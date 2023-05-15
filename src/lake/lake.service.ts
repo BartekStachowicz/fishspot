@@ -32,7 +32,9 @@ export class LakeService {
       await newLake.save();
 
       return newLake;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   /////// AUTO GENERATE FOR TESTING
@@ -60,7 +62,9 @@ export class LakeService {
       await newLake.save();
 
       return newLake._id;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   //////////////////////////////////////
@@ -76,7 +80,9 @@ export class LakeService {
         lake?.reservations || lakeForUpdate.reservations;
 
       await lakeForUpdate.save();
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getLake(lakeName: string, year: string): Promise<LakeOutput | null> {
@@ -119,7 +125,8 @@ export class LakeService {
   async findByName(name: string): Promise<Lake | null> {
     try {
       return this.lakeModel.findOne({ name }).exec();
-    } catch {
+    } catch (error) {
+      console.log(error);
       throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
     }
   }
@@ -127,7 +134,8 @@ export class LakeService {
   async findAll(): Promise<Lake[] | null> {
     try {
       return this.lakeModel.find().exec();
-    } catch {
+    } catch (error) {
+      console.log(error);
       throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
     }
   }

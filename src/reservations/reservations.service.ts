@@ -90,6 +90,7 @@ export class ReservationsService {
         fullName: fullName,
       };
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można zaaktualizować rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -129,6 +130,7 @@ export class ReservationsService {
       await this.lakeService.updateLake(lake);
       return reservationToUpdate;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można zaaktualizować rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -142,9 +144,9 @@ export class ReservationsService {
   ): Promise<ReservationData> {
     try {
       const reservation = await this.findReservationByID(lakeName, id);
-      const email = this.authService.decrypt(reservation.email);
-      const phone = this.authService.decrypt(reservation.phone);
-      const fullName = this.authService.decrypt(reservation.fullName);
+      const email = this.authService.decrypt(reservation?.email);
+      const phone = this.authService.decrypt(reservation?.phone);
+      const fullName = this.authService.decrypt(reservation?.fullName);
       return {
         ...reservation,
         email: email,
@@ -152,6 +154,7 @@ export class ReservationsService {
         fullName: fullName,
       };
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -193,7 +196,7 @@ export class ReservationsService {
         });
       if (filter === '') return reservations;
       return reservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el.fullName?.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
       console.log(error);
@@ -219,13 +222,13 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       const reservations = lake.reservations[year]
-        .filter((reservation) => reservation.confirmed)
+        .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
@@ -235,9 +238,10 @@ export class ReservationsService {
         });
       if (filter === '') return reservations;
       return reservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -274,13 +278,13 @@ export class ReservationsService {
       });
 
       const resultReservations = spotsWithReservations
-        .filter((reservation) => reservation.confirmed)
+        .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
@@ -291,9 +295,10 @@ export class ReservationsService {
 
       if (filter === '') return resultReservations;
       return resultReservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -324,9 +329,9 @@ export class ReservationsService {
 
       let reservations = [];
       lake.reservations[year].forEach((reservation) => {
-        reservation.data.forEach((resdata) => {
+        reservation?.data.forEach((resdata) => {
           if (
-            resdata.dates.some(
+            resdata?.dates.some(
               (d) =>
                 `${new Date(+d * 1000).getDate()}-${
                   new Date(+d * 1000).getMonth() + 1
@@ -342,9 +347,9 @@ export class ReservationsService {
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
@@ -356,9 +361,10 @@ export class ReservationsService {
       if (filter === '') return reservations;
 
       return reservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -382,14 +388,14 @@ export class ReservationsService {
         );
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
-      const reservations = lake.reservations[year]
-        .filter((el) => !el.isDepositPaid && el.isDepositRequired)
+      const reservations = lake?.reservations[year]
+        .filter((el) => !el?.isDepositPaid && el?.isDepositRequired)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
@@ -399,9 +405,10 @@ export class ReservationsService {
         });
       if (filter === '') return reservations;
       return reservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -425,14 +432,14 @@ export class ReservationsService {
         );
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
-      const reservations = lake.reservations[year]
-        .filter((el) => el.isDepositPaid)
+      const reservations = lake?.reservations[year]
+        .filter((el) => el?.isDepositPaid)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
-          const email = this.authService.decrypt(r.email);
-          const phone = this.authService.decrypt(r.phone);
-          const fullName = this.authService.decrypt(r.fullName);
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
           return {
             ...r,
             email: email,
@@ -442,9 +449,10 @@ export class ReservationsService {
         });
       if (filter === '') return reservations;
       return reservations.filter((el) =>
-        el.fullName.toLowerCase().includes(filter.toLowerCase()),
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
       );
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -462,26 +470,27 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       lakes.forEach((lake) => {
-        Object.values(lake.reservations).forEach((year) => {
+        Object.values(lake?.reservations).forEach((year) => {
           year.forEach((reservation) => {
-            const reservationDay = new Date(+reservation.timestamp * 1000);
+            const reservationDay = new Date(+reservation?.timestamp * 1000);
             // console.log(`DATA REZERWACJI ${index}: ${reservationDay}`);
             const twoDaysLater = new Date(reservationDay.getTime());
             twoDaysLater.setDate(twoDaysLater.getDate() + 2);
             // console.log(`DWA DNI PÓŹNIEJ ${index}: ${twoDaysLater}`);
             if (
-              !reservation.confirmed &&
-              !reservation.isDepositPaid &&
-              !reservation.isDepositRequired
+              !reservation?.confirmed &&
+              !reservation?.isDepositPaid &&
+              !reservation?.isDepositRequired
             ) {
               if (twoDaysLater < new Date()) {
-                this.deleteReservation(lake.name, reservation.id);
+                this.deleteReservation(lake?.name, reservation?.id);
               }
             }
           });
         });
       });
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można wyczyścić rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -505,19 +514,20 @@ export class ReservationsService {
       const year = this.getYearFromID(id);
       const result = await this.getReservationByID(lakeName, id);
 
-      const data = result.data;
-      lake.reservations[year] = lake.reservations[year].filter(
-        (el) => el.id !== id,
+      const data = result?.data;
+      lake.reservations[year] = lake?.reservations[year].filter(
+        (el) => el?.id !== id,
       );
 
       data.forEach(({ dates, spotId }) => {
-        const spotToUpdate = lake.spots.find((s) => s.spotId === spotId);
-        if (spotToUpdate && spotToUpdate.unavailableDates) {
-          Object.keys(spotToUpdate.unavailableDates).forEach((year) => {
-            lake.spots.find((s) => s.spotId === spotId).unavailableDates[year] =
-              spotToUpdate.unavailableDates[year].filter(
-                (date) => !dates.includes(date),
-              );
+        const spotToUpdate = lake?.spots.find((s) => s?.spotId === spotId);
+        if (spotToUpdate && spotToUpdate?.unavailableDates) {
+          Object.keys(spotToUpdate?.unavailableDates).forEach((year) => {
+            lake.spots.find((s) => s?.spotId === spotId).unavailableDates[
+              year
+            ] = spotToUpdate?.unavailableDates[year].filter(
+              (date) => !dates.includes(date),
+            );
           });
         }
       });
@@ -525,6 +535,7 @@ export class ReservationsService {
       await this.lakeService.updateLake(lake);
       return result;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można usunąć rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -544,9 +555,10 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       const year = this.getYearFromID(id);
-      const reservation = lake.reservations[year].find((el) => el.id === id);
+      const reservation = lake?.reservations[year].find((el) => el.id === id);
       return reservation;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można odnaleźć rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -578,6 +590,7 @@ export class ReservationsService {
       }
       return lakeForUpdate;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można dodać niedostępnych dat!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -610,6 +623,7 @@ export class ReservationsService {
 
       return result.length > 0 ? result : true;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Failed to check dates',
         HttpStatus.INTERNAL_SERVER_ERROR,

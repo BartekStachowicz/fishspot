@@ -37,6 +37,7 @@ export class SpotsService {
 
       return id;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można dodać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -72,6 +73,7 @@ export class SpotsService {
 
       return updatedSpot;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można zaaktualizować stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -91,6 +93,7 @@ export class SpotsService {
 
       await this.lakeService.updateLake(lake);
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można usunać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -125,6 +128,7 @@ export class SpotsService {
         options: spotOutput.options,
       };
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Nie można pobrać stanowiska!',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -147,7 +151,9 @@ export class SpotsService {
       });
 
       await this.lakeService.updateLake(lake);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   ///FOR TESTING
@@ -190,7 +196,9 @@ export class SpotsService {
       };
 
       return spot;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   ////////////////////////////////////////

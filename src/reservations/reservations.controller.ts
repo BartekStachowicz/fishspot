@@ -32,7 +32,11 @@ export class ReservationsController {
     );
     console.log({ ...newReservation, email: reservation.email });
     this.mailService.prepareAndSendEmail(
-      { ...newReservation, email: reservation.email },
+      {
+        ...newReservation,
+        email: reservation.email,
+        fullName: reservation.fullName,
+      },
       'pending',
     );
     return newReservation;
