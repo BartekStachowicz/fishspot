@@ -29,6 +29,7 @@ export class MailService {
     context: { mailContent: MailContent };
   }): Promise<void> {
     try {
+      console.log(input.to);
       await this.mailerService.sendMail(input);
     } catch (error) {
       throw new HttpException(
