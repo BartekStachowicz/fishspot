@@ -40,6 +40,15 @@ export class SpotsController {
     return updatedSpot;
   }
   @UseGuards(JwtGuard)
+  @Post('update-all-spot/:lakename')
+  async updateAllSpot(
+    @Param('lakename') lakeName: string,
+    @Body() input: { info: SpotsInfo; options: SpotOptions },
+  ): Promise<Spots[]> {
+    const updatedSpots = this.spotsService.updateAllSpots(lakeName, input);
+    return updatedSpots;
+  }
+  @UseGuards(JwtGuard)
   @Get('get-spot/:lakename/:id')
   async getSpotById(
     @Param('lakename') lakeName: string,

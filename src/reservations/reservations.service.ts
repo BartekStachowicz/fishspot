@@ -92,7 +92,7 @@ export class ReservationsService {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Nie można zaaktualizować rezerwacji!',
+        'Nie można zaktualizować rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -138,7 +138,7 @@ export class ReservationsService {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Nie można zaaktualizować rezerwacji!',
+        'Nie można zaktualizować rezerwacji!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

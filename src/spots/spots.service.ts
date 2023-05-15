@@ -9,10 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { LakeService } from '../lake/lake.service';
 import { SpotOptions, Spots, SpotsInfo } from './spots.model';
+import { Lake } from '../lake/lake.model';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class SpotsService {
   constructor(
+    @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
     @Inject(forwardRef(() => LakeService)) private lakeService: LakeService,
   ) {}
 
@@ -75,7 +79,42 @@ export class SpotsService {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Nie można zaaktualizować stanowiska!',
+        'Nie można zaktualizować stanowiska!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateAllSpots(
+    lakeName: string,
+    inputData: { info: SpotsInfo; options: SpotOptions },
+  ) {
+    try {
+      const lake = await this.lakeService.findByName(lakeName);
+      if (!lake)
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
+
+      const updatedSpots: Spots[] = lake.spots.map((spot) => {
+        return {
+          ...spot,
+          info: inputData.info,
+          options: inputData.options,
+        };
+      });
+
+      const updatedLake: Lake = new this.lakeModel({
+        ...lake.toObject(),
+        spots: updatedSpots,
+      });
+      await this.lakeService.updateLake(updatedLake);
+      return updatedSpots;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Nie można zaktualizować stanowisk!',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -82,6 +82,10 @@ export class LakeService {
       await lakeForUpdate.save();
     } catch (error) {
       console.log(error);
+      throw new HttpException(
+        'Nie można zaktualizować łowiska!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
