@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ReservationData } from '../reservations/reservations.model';
 
@@ -28,7 +28,14 @@ export class MailService {
     template: string;
     context: { mailContent: MailContent };
   }): Promise<void> {
-    await this.mailerService.sendMail(input);
+    try {
+      await this.mailerService.sendMail(input);
+    } catch (error) {
+      throw new HttpException(
+        'Nie można wysłać wiadomości email!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   private pending = 'Rezerwacja złożona pomyślnie!';
@@ -45,75 +52,82 @@ export class MailService {
     'Twoja rezerwacja została odrzucona. Przepraszamy za utrudnienia.';
 
   async prepareAndSendEmail(reservationData: ReservationData, status: string) {
-    let mailContent: MailContent;
+    try {
+      let mailContent: MailContent;
 
-    const name = reservationData.fullName.split(' ')[0];
-    const date = `${new Date(+reservationData.timestamp * 1000)
-      .getDate()
-      .toString()
-      .padStart(2, '0')}-${(
-      new Date(+reservationData.timestamp * 1000).getMonth() + 1
-    )
-      .toString()
-      .padStart(2, '0')}-${new Date(
-      +reservationData.timestamp * 1000,
-    ).getFullYear()}`;
+      const name = reservationData.fullName.split(' ')[0];
+      const date = `${new Date(+reservationData.timestamp * 1000)
+        .getDate()
+        .toString()
+        .padStart(2, '0')}-${(
+        new Date(+reservationData.timestamp * 1000).getMonth() + 1
+      )
+        .toString()
+        .padStart(2, '0')}-${new Date(
+        +reservationData.timestamp * 1000,
+      ).getFullYear()}`;
 
-    switch (status) {
-      case 'pending':
-        mailContent = {
-          id: reservationData.id,
-          name: name,
-          fullName: reservationData.fullName,
-          phone: reservationData.phone,
-          timestamp: date,
-          confirmed: 'Oczekująca',
-          header: this.pending,
-          textAfterHeader1: this.pendingText1,
-          textAfterHeader2: this.pendingText2,
-          domain: DOMAIN + reservationData.id,
-        };
-        break;
-      case 'confirmed':
-        mailContent = {
-          id: reservationData.id,
-          name: name,
-          fullName: reservationData.fullName,
-          phone: reservationData.phone,
-          timestamp: date,
-          confirmed: 'Potwierdzona',
-          header: this.confirmed,
-          textAfterHeader1: this.confirmedText1,
-          textAfterHeader2: '',
-          domain: DOMAIN + reservationData.id,
-        };
-        break;
-      case 'rejected':
-        mailContent = {
-          id: reservationData.id,
-          name: name,
-          fullName: reservationData.fullName,
-          phone: reservationData.phone,
-          timestamp: date,
-          confirmed: 'Odrzucona',
-          header: this.rejected,
-          textAfterHeader1: this.rejectedText1,
-          textAfterHeader2: '',
-          domain: '',
-        };
-        break;
+      switch (status) {
+        case 'pending':
+          mailContent = {
+            id: reservationData.id,
+            name: name,
+            fullName: reservationData.fullName,
+            phone: reservationData.phone,
+            timestamp: date,
+            confirmed: 'Oczekująca',
+            header: this.pending,
+            textAfterHeader1: this.pendingText1,
+            textAfterHeader2: this.pendingText2,
+            domain: DOMAIN + reservationData.id,
+          };
+          break;
+        case 'confirmed':
+          mailContent = {
+            id: reservationData.id,
+            name: name,
+            fullName: reservationData.fullName,
+            phone: reservationData.phone,
+            timestamp: date,
+            confirmed: 'Potwierdzona',
+            header: this.confirmed,
+            textAfterHeader1: this.confirmedText1,
+            textAfterHeader2: '',
+            domain: DOMAIN + reservationData.id,
+          };
+          break;
+        case 'rejected':
+          mailContent = {
+            id: reservationData.id,
+            name: name,
+            fullName: reservationData.fullName,
+            phone: reservationData.phone,
+            timestamp: date,
+            confirmed: 'Odrzucona',
+            header: this.rejected,
+            textAfterHeader1: this.rejectedText1,
+            textAfterHeader2: '',
+            domain: '',
+          };
+          break;
+      }
+
+      const subject = `Rezerwacja z dnia ${date} Leśna Przystań Ocieka`;
+
+      const config = {
+        to: reservationData.email,
+        from: 'fishspot.test@gmail.com',
+        subject: subject,
+        template: 'fishspot',
+        context: { mailContent: mailContent },
+      };
+
+      await this.sendEmail(config);
+    } catch (error) {
+      throw new HttpException(
+        'Nie można przygotować wiadomości email!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-
-    const subject = `Rezerwacja z dnia ${date} Leśna Przystań Ocieka`;
-
-    const config = {
-      to: reservationData.email,
-      from: 'fishspot.test@gmail.com',
-      subject: subject,
-      template: 'fishspot',
-      context: { mailContent: mailContent },
-    };
-
-    await this.sendEmail(config);
   }
 }

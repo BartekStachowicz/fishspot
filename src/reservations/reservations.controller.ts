@@ -30,7 +30,7 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
-    if (newReservation.email !== '')
+    if (!reservation.email)
       this.mailService.prepareAndSendEmail(
         { ...newReservation, email: reservation.email },
         'pending',
@@ -45,7 +45,7 @@ export class ReservationsController {
   ): Promise<ReservationData> {
     const updatedReservation =
       await this.reservationsService.updateConfirmedReservation(lakeName, id);
-    if (updatedReservation.email !== '')
+    if (!updatedReservation.email)
       this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
@@ -183,7 +183,7 @@ export class ReservationsController {
       lakeName,
       id,
     );
-    if (reservation.email !== '')
+    if (!reservation.email)
       this.mailService.prepareAndSendEmail(reservation, 'rejected');
   }
 
