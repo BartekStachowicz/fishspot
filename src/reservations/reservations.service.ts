@@ -131,12 +131,19 @@ export class ReservationsService {
     lakeName: string,
     id: string,
   ): Promise<ReservationData> {
-    const reservation = await this.findReservationByID(lakeName, id);
-    const email = this.authService.decrypt(reservation.email);
-    return {
-      ...reservation,
-      email: email,
-    };
+    try {
+      const reservation = await this.findReservationByID(lakeName, id);
+      const email = this.authService.decrypt(reservation.email);
+      return {
+        ...reservation,
+        email: email,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Nie można pobrać rezerwacji!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async getNotConfirmedReservations(

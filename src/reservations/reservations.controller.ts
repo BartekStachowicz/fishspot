@@ -30,7 +30,10 @@ export class ReservationsController {
       lakeName,
       reservation,
     );
-    this.mailService.prepareAndSendEmail(newReservation, 'pending');
+    this.mailService.prepareAndSendEmail(
+      { ...newReservation, email: reservation.email },
+      'pending',
+    );
     return newReservation;
   }
   @UseGuards(JwtGuard)

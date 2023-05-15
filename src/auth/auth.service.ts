@@ -123,6 +123,7 @@ export class AuthService {
   }
 
   encrypt(text: string): string {
+    console.log(Buffer.from(AES_PASSWORD).length);
     const cipher = createCipheriv(
       'aes-256-cbc',
       Buffer.from(AES_PASSWORD),
