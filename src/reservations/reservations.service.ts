@@ -78,6 +78,9 @@ export class ReservationsService {
       const year = this.getYearFromID(id);
 
       lake.reservations[year].find((el) => el.id === id).confirmed = true;
+      if (lake.reservations[year].find((el) => el.id === id).isDepositRequired)
+        lake.reservations[year].find((el) => el.id === id).isDepositPaid = true;
+
       await this.lakeService.updateLake(lake);
       const reservation = lake.reservations[year].find((el) => el.id === id);
       const email = this.authService.decrypt(reservation.email);
