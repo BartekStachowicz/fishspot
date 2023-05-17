@@ -351,7 +351,16 @@ export class ReservationsService {
       lake.reservations[year].forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
           resdata.dates.sort((a, b) => +a - +b);
-          console.log(resdata.dates);
+          console.log(
+            `Data all: ${new Date(+resdata.dates * 1000).getDate()}-${
+              new Date(+resdata.dates * 1000).getMonth() + 1
+            }-${new Date(+resdata.dates * 1000).getFullYear()}`,
+          );
+          console.log(
+            `Data od 0: ${new Date(+resdata.dates[0] * 1000).getDate()}-${
+              new Date(+resdata.dates[0] * 1000).getMonth() + 1
+            }-${new Date(+resdata.dates[0] * 1000).getFullYear()}`,
+          );
           if (
             `${new Date(+resdata.dates[0] * 1000).getDate()}-${
               new Date(+resdata.dates[0] * 1000).getMonth() + 1
