@@ -18,6 +18,7 @@ export interface ReservationData {
   fullPaymentMethod: string; //online, cash itp.
   fullPaymentStatus: string; //oczekujące, zapłacone itp.
   depositPrice: number; //wysokość zaliczki
+  depositSoFar: number; //wysokość wpłaconej zaliczki (np. gotówką przy okazji łowienia)
   isDepositPaid: boolean; //czy zapłacona zaliczka
   isDepositRequired: boolean; // czy wymagana zaliczka
 }
