@@ -94,14 +94,7 @@ export class ReservationsController {
         filter,
         year,
       );
-    console.log(
-      'ObiektNotConfirmedJSON ->' +
-        lakeName +
-        '-> ' +
-        JSON.stringify(reservations),
-    );
-    console.log('ObiektNotConfirmed ->' + lakeName + '-> ' + reservations);
-    console.log(reservations.length);
+    if (reservations.length === 0) return [];
     return reservations;
   }
   @UseGuards(JwtGuard)
@@ -200,11 +193,7 @@ export class ReservationsController {
         filter,
         year,
       );
-    console.log(
-      'ObiektNoNPaidJSON ->' + lakeName + '-> ' + JSON.stringify(reservations),
-    );
-    console.log('ObiektNoNPaid ->' + lakeName + '-> ' + reservations);
-    console.log(reservations.length);
+    if (reservations.length === 0) return [];
     return reservations;
   }
   @UseGuards(JwtGuard)
