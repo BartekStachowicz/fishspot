@@ -63,6 +63,7 @@ export class ReservationsController {
       id,
       reservation,
     );
+    this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
     return updatedReservation;
   }
 

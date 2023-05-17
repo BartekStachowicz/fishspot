@@ -136,7 +136,13 @@ export class ReservationsService {
       );
       lake.reservations[year][reservationIndex] = reservationToUpdate;
       await this.lakeService.updateLake(lake);
-      return reservationToUpdate;
+
+      return {
+        ...reservationToUpdate,
+        phone: reservationData.phone,
+        email: reservationData.email,
+        fullName: reservationData.fullName,
+      };
     } catch (error) {
       console.log(error);
       throw new HttpException(
