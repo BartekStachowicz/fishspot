@@ -53,10 +53,14 @@ export class LakeService {
         spots.push(this.spotsService.genereteNewSpot(String(i), name));
       }
 
+      const year = this.getCurrentYear();
+
       const newLake = new this.lakeModel({
         name: lakeName,
         spots: spots,
-        reservations: {},
+        reservations: {
+          [year]: [],
+        },
       });
 
       await newLake.save();

@@ -94,7 +94,13 @@ export class ReservationsController {
         filter,
         year,
       );
-    console.log('ObiektNotConfirmed' + JSON.stringify(reservations));
+    console.log(
+      'ObiektNotConfirmedJSON ->' +
+        lakeName +
+        '-> ' +
+        JSON.stringify(reservations),
+    );
+    console.log('ObiektNotConfirmed ->' + lakeName + '-> ' + reservations);
     console.log(reservations.length);
     return reservations;
   }
@@ -194,7 +200,10 @@ export class ReservationsController {
         filter,
         year,
       );
-    console.log('ObiektNoNPaid' + JSON.stringify(reservations));
+    console.log(
+      'ObiektNoNPaidJSON ->' + lakeName + '-> ' + JSON.stringify(reservations),
+    );
+    console.log('ObiektNoNPaid ->' + lakeName + '-> ' + reservations);
     console.log(reservations.length);
     return reservations;
   }
