@@ -205,7 +205,8 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (reservations.length === 0) return [];
+      console.log('Obiekt' + JSON.stringify(reservations));
+      console.log(reservations.length);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el.fullName?.toLowerCase().includes(filter.toLowerCase()),
@@ -248,7 +249,7 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (reservations.length === 0) return [];
+
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el?.fullName.toLowerCase().includes(filter.toLowerCase()),
@@ -305,7 +306,7 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (resultReservations.length === 0) return [];
+
       if (filter === '') return resultReservations;
       return resultReservations.filter((el) =>
         el?.fullName.toLowerCase().includes(filter.toLowerCase()),
@@ -370,7 +371,7 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (reservations.length === 0) return [];
+
       if (filter === '') return reservations;
 
       return reservations.filter((el) =>
@@ -418,7 +419,8 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (reservations.length === 0) return [];
+      console.log('Obiekt' + JSON.stringify(reservations));
+      console.log(reservations.length);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el?.fullName.toLowerCase().includes(filter.toLowerCase()),
@@ -463,7 +465,7 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      if (reservations.length === 0) return [];
+
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el?.fullName.toLowerCase().includes(filter.toLowerCase()),
