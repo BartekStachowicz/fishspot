@@ -94,7 +94,6 @@ export class ReservationsController {
         filter,
         year,
       );
-    if (reservations.length === 0) return [];
     return reservations;
   }
   @UseGuards(JwtGuard)
@@ -193,7 +192,6 @@ export class ReservationsController {
         filter,
         year,
       );
-    if (reservations.length === 0) return [];
     return reservations;
   }
   @UseGuards(JwtGuard)

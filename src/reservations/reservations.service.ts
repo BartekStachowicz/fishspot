@@ -344,13 +344,11 @@ export class ReservationsService {
       let reservations = [];
       lake.reservations[year].forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
+          const dates = resdata.dates.sort((a, b) => +a - +b);
           if (
-            resdata?.dates.some(
-              (d) =>
-                `${new Date(+d * 1000).getDate()}-${
-                  new Date(+d * 1000).getMonth() + 1
-                }-${new Date(+d * 1000).getFullYear()}` === day,
-            )
+            `${new Date(+dates[0] * 1000).getDate()}-${
+              new Date(+dates[0] * 1000).getMonth() + 1
+            }-${new Date(+dates[0] * 1000).getFullYear()}` === day
           ) {
             reservations.push(reservation);
           }
