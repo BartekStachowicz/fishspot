@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -31,7 +32,7 @@ export class SpotsController {
     return id;
   }
   @UseGuards(JwtGuard)
-  @Post('update-spot/:lakename')
+  @Patch('update-spot/:lakename')
   async updateSpot(
     @Param('lakename') lakeName: string,
     @Body() spot: Spots,
@@ -40,7 +41,7 @@ export class SpotsController {
     return updatedSpot;
   }
   @UseGuards(JwtGuard)
-  @Post('update-all-spot/:lakename')
+  @Patch('update-all-spot/:lakename')
   async updateAllSpot(
     @Param('lakename') lakeName: string,
     @Body() input: { info: SpotsInfo; options: SpotOptions },

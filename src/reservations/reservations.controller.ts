@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -40,19 +41,19 @@ export class ReservationsController {
     );
     return newReservation;
   }
+  // @UseGuards(JwtGuard)
+  // @Post(':lakename/:id')
+  // async confirmReservation(
+  //   @Param('lakename') lakeName: string,
+  //   @Param('id') id: string,
+  // ): Promise<ReservationData> {
+  //   const updatedReservation =
+  //     await this.reservationsService.updateConfirmedReservation(lakeName, id);
+  //   this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
+  //   return updatedReservation;
+  // }
   @UseGuards(JwtGuard)
-  @Post(':lakename/:id')
-  async confirmReservation(
-    @Param('lakename') lakeName: string,
-    @Param('id') id: string,
-  ): Promise<ReservationData> {
-    const updatedReservation =
-      await this.reservationsService.updateConfirmedReservation(lakeName, id);
-    this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
-    return updatedReservation;
-  }
-  @UseGuards(JwtGuard)
-  @Post('update/:lakename/:id')
+  @Put('update/:lakename/:id')
   async updateReservation(
     @Param('lakename') lakeName: string,
     @Param('id') id: string,
@@ -137,7 +138,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   @Get('todays/:lakename')
   async getTodaysReservations(
     @Query('offset') offset: number,

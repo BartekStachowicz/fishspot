@@ -5,7 +5,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
-import { Spots } from '../spots/spots.model';
+// import { Spots } from '../spots/spots.model';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
@@ -67,38 +67,38 @@ export class ReservationsService {
     }
   }
 
-  async updateConfirmedReservation(lakeName: string, id: string) {
-    try {
-      const lake = await this.lakeService.findByName(lakeName);
-      if (!lake)
-        throw new HttpException(
-          'Nie znaleziono łowiska!',
-          HttpStatus.NOT_FOUND,
-        );
-      const year = this.getYearFromID(id);
+  // async updateConfirmedReservation(lakeName: string, id: string) {
+  //   try {
+  //     const lake = await this.lakeService.findByName(lakeName);
+  //     if (!lake)
+  //       throw new HttpException(
+  //         'Nie znaleziono łowiska!',
+  //         HttpStatus.NOT_FOUND,
+  //       );
+  //     const year = this.getYearFromID(id);
 
-      lake.reservations[year].find((el) => el.id === id).confirmed = true;
-      if (lake.reservations[year].find((el) => el.id === id).isDepositRequired)
-        lake.reservations[year].find((el) => el.id === id).isDepositPaid = true;
-      await this.lakeService.updateLake(lake);
-      const reservation = lake.reservations[year].find((el) => el.id === id);
-      const email = this.authService.decrypt(reservation.email);
-      const phone = this.authService.decrypt(reservation.phone);
-      const fullName = this.authService.decrypt(reservation.fullName);
-      return {
-        ...reservation,
-        email: email,
-        phone: phone,
-        fullName: fullName,
-      };
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Nie można zaktualizować rezerwacji!',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  //     lake.reservations[year].find((el) => el.id === id).confirmed = true;
+  //     if (lake.reservations[year].find((el) => el.id === id).isDepositRequired)
+  //       lake.reservations[year].find((el) => el.id === id).isDepositPaid = true;
+  //     await this.lakeService.updateLake(lake);
+  //     const reservation = lake.reservations[year].find((el) => el.id === id);
+  //     const email = this.authService.decrypt(reservation.email);
+  //     const phone = this.authService.decrypt(reservation.phone);
+  //     const fullName = this.authService.decrypt(reservation.fullName);
+  //     return {
+  //       ...reservation,
+  //       email: email,
+  //       phone: phone,
+  //       fullName: fullName,
+  //     };
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new HttpException(
+  //       'Nie można zaktualizować rezerwacji!',
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
   async updateReservation(
     lakeName: string,
@@ -351,21 +351,17 @@ export class ReservationsService {
       lake.reservations[year].forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
           resdata.dates.sort((a, b) => +a - +b);
-          console.log(
-            `Data all: ${new Date(+resdata.dates * 1000).getDate()}-${
-              new Date(+resdata.dates * 1000).getMonth() + 1
-            }-${new Date(+resdata.dates * 1000).getFullYear()}`,
-          );
-          console.log(
-            `Data od 0: ${new Date(+resdata.dates[0] * 1000).getDate()}-${
-              new Date(+resdata.dates[0] * 1000).getMonth() + 1
-            }-${new Date(+resdata.dates[0] * 1000).getFullYear()}`,
-          );
+
           if (
             `${new Date(+resdata.dates[0] * 1000).getDate()}-${
               new Date(+resdata.dates[0] * 1000).getMonth() + 1
             }-${new Date(+resdata.dates[0] * 1000).getFullYear()}` === day
           ) {
+            console.log(
+              `${new Date(+resdata.dates[0] * 1000).getDate()}-${
+                new Date(+resdata.dates[0] * 1000).getMonth() + 1
+              }-${new Date(+resdata.dates[0] * 1000).getFullYear()} === ${day}`,
+            );
             reservations.push(reservation);
           }
         });
@@ -631,38 +627,38 @@ export class ReservationsService {
     }
   }
 
-  private checkIfDatesAreAvailable(
-    spots: Spots[],
-    data: { dates: string[]; spotId: string }[],
-  ): string[] | boolean {
-    try {
-      const result: string[] = [];
+  // private checkIfDatesAreAvailable(
+  //   spots: Spots[],
+  //   data: { dates: string[]; spotId: string }[],
+  // ): string[] | boolean {
+  //   try {
+  //     const result: string[] = [];
 
-      let datesToCheck: string[];
+  //     let datesToCheck: string[];
 
-      data.forEach((d) => {
-        datesToCheck = [...datesToCheck, ...d.dates];
-      });
+  //     data.forEach((d) => {
+  //       datesToCheck = [...datesToCheck, ...d.dates];
+  //     });
 
-      spots.forEach((spot) => {
-        Object.values(spot.unavailableDates).forEach((year) => {
-          year.forEach((date) => {
-            if (datesToCheck.includes(date)) {
-              result.push(date);
-            }
-          });
-        });
-      });
+  //     spots.forEach((spot) => {
+  //       Object.values(spot.unavailableDates).forEach((year) => {
+  //         year.forEach((date) => {
+  //           if (datesToCheck.includes(date)) {
+  //             result.push(date);
+  //           }
+  //         });
+  //       });
+  //     });
 
-      return result.length > 0 ? result : true;
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Failed to check dates',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  //     return result.length > 0 ? result : true;
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new HttpException(
+  //       'Failed to check dates',
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
   private getYearFromID(id: string): string {
     const timestamp = id.split('.')[1];
