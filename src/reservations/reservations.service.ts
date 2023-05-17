@@ -205,8 +205,8 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      console.log('Obiekt' + JSON.stringify(reservations));
-      console.log(reservations.length);
+      // console.log('Obiekt' + JSON.stringify(reservations));
+      // console.log(reservations.length);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el.fullName?.toLowerCase().includes(filter.toLowerCase()),
@@ -419,8 +419,8 @@ export class ReservationsService {
             fullName: fullName,
           };
         });
-      console.log('Obiekt' + JSON.stringify(reservations));
-      console.log(reservations.length);
+      // console.log('Obiekt' + JSON.stringify(reservations));
+      // console.log(reservations.length);
       if (filter === '') return reservations;
       return reservations.filter((el) =>
         el?.fullName.toLowerCase().includes(filter.toLowerCase()),

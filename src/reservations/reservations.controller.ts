@@ -94,6 +94,8 @@ export class ReservationsController {
         filter,
         year,
       );
+    console.log('ObiektNotConfirmed' + JSON.stringify(reservations));
+    console.log(reservations.length);
     return reservations;
   }
   @UseGuards(JwtGuard)
@@ -192,6 +194,8 @@ export class ReservationsController {
         filter,
         year,
       );
+    console.log('ObiektNoNPaid' + JSON.stringify(reservations));
+    console.log(reservations.length);
     return reservations;
   }
   @UseGuards(JwtGuard)
