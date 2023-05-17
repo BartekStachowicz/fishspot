@@ -343,25 +343,27 @@ export class ReservationsService {
         );
       const currentYear = this.getCurrentYear();
       if (year === '') year = currentYear;
-      const day = `${new Date(+date * 1000).getDate()}-${
-        new Date(+date * 1000).getMonth() + 1
-      }-${new Date(+date * 1000).getFullYear()}`;
+
+      const dateDay = new Date(+date * 1000).getDate();
+      const dateMonth = new Date(+date * 1000).getMonth() + 1;
+      const dateYear = new Date(+date * 1000).getFullYear();
 
       let reservations = [];
       lake.reservations[year].forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
           resdata.dates.sort((a, b) => +a - +b);
+          const reservationDay = new Date(+resdata.dates[0] * 1000).getDate();
+          const reservationMonth =
+            new Date(+resdata.dates[0] * 1000).getMonth() + 1;
+          const reservationYear = new Date(
+            +resdata.dates[0] * 1000,
+          ).getFullYear();
 
           if (
-            `${new Date(+resdata.dates[0] * 1000).getDate()}-${
-              new Date(+resdata.dates[0] * 1000).getMonth() + 1
-            }-${new Date(+resdata.dates[0] * 1000).getFullYear()}` === day
+            reservationDay === dateDay &&
+            reservationMonth === dateMonth &&
+            reservationYear === dateYear
           ) {
-            console.log(
-              `${new Date(+resdata.dates[0] * 1000).getDate()}-${
-                new Date(+resdata.dates[0] * 1000).getMonth() + 1
-              }-${new Date(+resdata.dates[0] * 1000).getFullYear()} === ${day}`,
-            );
             reservations.push(reservation);
           }
         });

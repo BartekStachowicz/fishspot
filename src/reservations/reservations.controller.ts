@@ -138,7 +138,7 @@ export class ReservationsController {
       );
     return reservations;
   }
-  // @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard)
   @Get('todays/:lakename')
   async getTodaysReservations(
     @Query('offset') offset: number,
