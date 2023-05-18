@@ -351,12 +351,14 @@ export class ReservationsService {
       let reservations = [];
       lake.reservations[year].forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
-          resdata.dates.sort((a, b) => +a - +b);
-          const reservationDay = new Date(+resdata.dates[0] * 1000).getDate();
+          resdata.dates.sort((a, b) => +a.date - +b.date);
+          const reservationDay = new Date(
+            +resdata.dates[0].date * 1000,
+          ).getDate();
           const reservationMonth =
-            new Date(+resdata.dates[0] * 1000).getMonth() + 1;
+            new Date(+resdata.dates[0].date * 1000).getMonth() + 1;
           const reservationYear = new Date(
-            +resdata.dates[0] * 1000,
+            +resdata.dates[0].date * 1000,
           ).getFullYear();
 
           if (
@@ -557,7 +559,8 @@ export class ReservationsService {
             lake.spots.find((s) => s?.spotId === spotId).unavailableDates[
               year
             ] = spotToUpdate?.unavailableDates[year].filter(
-              (date) => !dates.includes(date),
+              (unavailableDate) =>
+                !dates.some(({ date }) => date === unavailableDate),
             );
           });
         }
@@ -614,7 +617,7 @@ export class ReservationsService {
             }
             lakeForUpdate.spots[j].unavailableDates[year] = [
               ...lakeForUpdate.spots[j].unavailableDates[year],
-              ...reservation.data[i].dates,
+              ...reservation.data[i].dates[i].date,
             ];
           }
         }

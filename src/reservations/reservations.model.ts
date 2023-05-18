@@ -8,7 +8,10 @@ export interface ReservationData {
   phone: string;
   email: string;
   data: {
-    dates: string[];
+    dates: {
+      date: string;
+      priceForDate: number;
+    }[];
     spotId: string;
   }[];
   timestamp: string;
