@@ -615,10 +615,13 @@ export class ReservationsService {
             if (!lakeForUpdate.spots[j].unavailableDates[year]) {
               lakeForUpdate.spots[j].unavailableDates[year] = [];
             }
-            lakeForUpdate.spots[j].unavailableDates[year] = [
-              ...lakeForUpdate.spots[j].unavailableDates[year],
-              reservation.data[i].dates[i].date,
-            ];
+            // lakeForUpdate.spots[j].unavailableDates[year] = [
+            //   ...lakeForUpdate.spots[j].unavailableDates[year],
+            //   reservation.data[i].dates[i].date,
+            // ];
+            reservation.data[i].dates.forEach((d) => {
+              lakeForUpdate.spots[j].unavailableDates[year].push(d.date);
+            });
           }
         }
       }
