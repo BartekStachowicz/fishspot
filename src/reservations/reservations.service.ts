@@ -617,7 +617,7 @@ export class ReservationsService {
             }
             lakeForUpdate.spots[j].unavailableDates[year] = [
               ...lakeForUpdate.spots[j].unavailableDates[year],
-              ...reservation.data[i].dates[i].date,
+              reservation.data[i].dates[i].date,
             ];
           }
         }
