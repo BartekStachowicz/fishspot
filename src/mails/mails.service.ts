@@ -51,7 +51,11 @@ export class MailService {
   private rejectedText1 =
     'Twoja rezerwacja została odrzucona. Przepraszamy za utrudnienia.';
 
-  async prepareAndSendEmail(reservationData: ReservationData, status: string) {
+  async prepareAndSendEmail(
+    reservationData: ReservationData,
+    status: string,
+    lakeName: string,
+  ) {
     try {
       let mailContent: MailContent;
 
@@ -79,7 +83,7 @@ export class MailService {
             header: this.pending,
             textAfterHeader1: this.pendingText1,
             textAfterHeader2: this.pendingText2,
-            domain: DOMAIN + reservationData.id,
+            domain: DOMAIN + lakeName + '/podsumowanie/' + reservationData.id,
           };
           break;
         case 'confirmed':
@@ -93,7 +97,7 @@ export class MailService {
             header: this.confirmed,
             textAfterHeader1: this.confirmedText1,
             textAfterHeader2: '',
-            domain: DOMAIN + reservationData.id,
+            domain: DOMAIN + lakeName + '/podsumowanie/' + reservationData.id,
           };
           break;
         case 'rejected':

@@ -38,6 +38,7 @@ export class ReservationsController {
         fullName: reservation.fullName,
       },
       'pending',
+      lakeName,
     );
     return newReservation;
   }
@@ -64,7 +65,11 @@ export class ReservationsController {
       id,
       reservation,
     );
-    this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
+    this.mailService.prepareAndSendEmail(
+      updatedReservation,
+      'confirmed',
+      lakeName,
+    );
     return updatedReservation;
   }
 
@@ -207,7 +212,7 @@ export class ReservationsController {
       id,
     );
 
-    this.mailService.prepareAndSendEmail(reservation, 'rejected');
+    this.mailService.prepareAndSendEmail(reservation, 'rejected', lakeName);
   }
 
   @UseGuards(JwtGuard)
