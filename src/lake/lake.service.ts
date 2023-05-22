@@ -15,7 +15,7 @@ import { SpotsService } from 'src/spots/spots.service';
 @Injectable()
 export class LakeService {
   constructor(
-    @InjectModel('Lake') private readonly lakeModel: Model<Lake>,
+    @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
     @Inject(forwardRef(() => SpotsService))
     private spotsService: SpotsService,
   ) {}

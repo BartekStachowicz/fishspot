@@ -8,7 +8,7 @@ import { SpotsModule } from '../spots/spots.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Lake', schema: LakeSchema }]),
+    MongooseModule.forFeature([{ name: 'Ocieka', schema: LakeSchema }]),
     forwardRef(() => SpotsModule),
   ],
   controllers: [LakeController],
