@@ -7,67 +7,65 @@
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<hr>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+# FISHSPOT
 
-## Installation
+<div align="center">
 
-```bash
-$ npm install
-```
+<h3 align="center">FISHSPOT - System rezerwacji stanowisk - demo</h3>
 
-## Running the app
+  <p align="center">
+    <br />
+    <a href="https://fish-spot.vercel.app/">VISIT PAGE</a>
+  </p>
+</div>
 
-```bash
-# development
-$ npm run start
+<!-- ABOUT THE PROJECT -->
 
-# watch mode
-$ npm run start:dev
+## About The Project
 
-# production mode
-$ npm run start:prod
-```
+![SPECTOOLS_PREVIEW][preview-app]
+<br/>
 
-## Test
+<p>Admin panel to manage the reservations.</p>
 
-```bash
-# unit tests
-$ npm run test
+![DASHBOARD_PREVIEW][preview-dashboard]
 
-# e2e tests
-$ npm run test:e2e
+<hr>
 
-# test coverage
-$ npm run test:cov
-```
+### Built With
 
-## Support
+[![NestJS][nestjs]][nestjs-url] & [![MongoDB][mongo]][mongo-url]
+<br/>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Hosted on
 
-## Stay in touch
+[![SEOHOST][seohost]][seohost-url]
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Contact
 
-## License
+![E-MAIL][gmail-addres]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bartoszstachowicz@gmail.com <br/>
+![MOBILE][phone-number]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;698 850 820 <br/>
+[![Linkedin][linkedin]][linkedin-url]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bstachowicz <br/>
 
-Nest is [MIT licensed](LICENSE).
+<!-- URL's -->
+
+[nestjs]: https://img.shields.io/badge/NESTJS-3f3e42?style=for-the-badge&logo=nestjs&logoColor=FF0000
+[nestjs-url]: https://nestjs.com/
+[express]: https://img.shields.io/badge/express-D3D3D3?style=for-the-badge&logo=Express&logoColor=000000
+[express-url]: https://expressjs.com/
+[mongo]: https://img.shields.io/badge/MongoDB-3f3e42?style=for-the-badge&logo=MongoDB&logoColor=4db33d
+[mongo-url]: https://www.mongodb.com
+[seohost]: https://img.shields.io/badge/SEOHOST-2C384A?style=for-the-badge&logo=seohost&logoColor=00ff00
+[seohost-url]: https://seohost.pl/
+[angular-url]: https://angular.io/
+[angular]: https://img.shields.io/badge/Angular-FF0000?style=for-the-badge&logo=Angular
+[preview-app]: assets/calendar.jpg
+[preview-dashboard]: assets/dashboard.png
+[github-issue]: https://img.shields.io/github/issues/BartekStachowicz/my-recipe-book?color=%235FBFF9&style=flat-square
+[linkedin]: https://img.shields.io/badge/Linkedin-0072b1?style=for-the-badge&logo=LinkedIn
+[linkedin-url]: https://linkedin.com/in/bstachowicz
+[gmail-addres]: https://img.shields.io/badge/email-whitesmoke?style=for-the-badge&logo=Gmail
+[phone-number]: https://img.shields.io/badge/mobile-whitesmoke?style=for-the-badge&logo=Gmail&logoColor=black

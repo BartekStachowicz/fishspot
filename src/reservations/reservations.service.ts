@@ -326,6 +326,41 @@ export class ReservationsService {
     }
   }
 
+  private createIndividualReservations(reservationData: ReservationData[]) {
+    const individualReservations = [];
+
+    reservationData.forEach((reservation) => {
+      reservation.data.forEach((spot) => {
+        const individualReservation = {
+          id: reservation.id,
+          fullName: reservation.fullName,
+          phone: reservation.phone,
+          email: reservation.email,
+          data: [
+            {
+              dates: spot.dates,
+              spotId: spot.spotId,
+            },
+          ],
+          timestamp: reservation.timestamp,
+          confirmed: reservation.confirmed,
+          rejected: reservation.rejected,
+          price: reservation.price,
+          fullPaymentMethod: reservation.fullPaymentMethod,
+          fullPaymentStatus: reservation.fullPaymentStatus,
+          depositPrice: reservation.depositPrice,
+          depositSoFar: reservation.depositSoFar,
+          isDepositPaid: reservation.isDepositPaid,
+          isDepositRequired: reservation.isDepositRequired,
+        };
+
+        individualReservations.push(individualReservation);
+      });
+    });
+
+    return individualReservations;
+  }
+
   async getTodaysReservations(
     lakeName: string,
     offset: number,
@@ -348,8 +383,12 @@ export class ReservationsService {
       const dateMonth = new Date(+date * 1000).getMonth() + 1;
       const dateYear = new Date(+date * 1000).getFullYear();
 
+      const splitedResaervation = this.createIndividualReservations(
+        lake.reservations[year],
+      );
+
       let reservations = [];
-      lake.reservations[year].forEach((reservation) => {
+      splitedResaervation.forEach((reservation) => {
         reservation?.data.forEach((resdata) => {
           resdata.dates.sort((a, b) => +a.date - +b.date);
           const reservationDay = new Date(

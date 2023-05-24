@@ -199,7 +199,9 @@ export class SpotsService {
       const spot: Spots = {
         spotId: this.buildUniqueID(lakeName, spotNumber),
         number: spotNumber,
-        unavailableDates: {},
+        unavailableDates: {
+          '2023': [],
+        },
         info: {
           priceList: {
             options: {
