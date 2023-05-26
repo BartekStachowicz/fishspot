@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
@@ -122,29 +127,43 @@ export class AuthService {
     }
   }
 
-  encrypt(text: string): string {
-    const cipher = createCipheriv(
-      'aes-256-cbc',
-      Buffer.from(AES_PASSWORD),
-      IV_KEY,
-    );
-    let encrypted = cipher.update(text);
-    encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return `${IV_KEY.toString('hex')}:${encrypted.toString('hex')}`;
+  public encrypt(text: string): string {
+    try {
+      const cipher = createCipheriv(
+        'aes-256-cbc',
+        Buffer.from(AES_PASSWORD),
+        IV_KEY,
+      );
+      let encrypted = cipher.update(text);
+      encrypted = Buffer.concat([encrypted, cipher.final()]);
+      return `${IV_KEY.toString('hex')}:${encrypted.toString('hex')}`;
+    } catch (error) {
+      throw new HttpException(
+        'Nie można zaszyfrować!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  decrypt(text: string): string {
-    const [iv, encrypted] = text
-      .split(':')
-      .map((hex) => Buffer.from(hex, 'hex'));
+  public decrypt(text: string): string {
+    try {
+      const [iv, encrypted] = text
+        .split(':')
+        .map((hex) => Buffer.from(hex, 'hex'));
 
-    const decipher = createDecipheriv(
-      'aes-256-cbc',
-      Buffer.from(AES_PASSWORD),
-      iv,
-    );
-    let decrypted = decipher.update(encrypted);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
+      const decipher = createDecipheriv(
+        'aes-256-cbc',
+        Buffer.from(AES_PASSWORD),
+        iv,
+      );
+      let decrypted = decipher.update(encrypted);
+      decrypted = Buffer.concat([decrypted, decipher.final()]);
+      return decrypted.toString();
+    } catch (error) {
+      throw new HttpException(
+        'Nie można odszyfrować!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

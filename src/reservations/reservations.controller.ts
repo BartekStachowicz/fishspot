@@ -42,17 +42,7 @@ export class ReservationsController {
     );
     return newReservation;
   }
-  // @UseGuards(JwtGuard)
-  // @Post(':lakename/:id')
-  // async confirmReservation(
-  //   @Param('lakename') lakeName: string,
-  //   @Param('id') id: string,
-  // ): Promise<ReservationData> {
-  //   const updatedReservation =
-  //     await this.reservationsService.updateConfirmedReservation(lakeName, id);
-  //   this.mailService.prepareAndSendEmail(updatedReservation, 'confirmed');
-  //   return updatedReservation;
-  // }
+
   @UseGuards(JwtGuard)
   @Put('update/:lakename/:id')
   async updateReservation(
