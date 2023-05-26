@@ -72,7 +72,7 @@ export class ReservationsService {
     reservationData: ReservationData,
   ): Promise<ReservationData> {
     try {
-      const lake = await this.lakeService.findByName(lakeName);
+      let lake = await this.lakeService.findByName(lakeName);
       if (!lake) {
         throw new HttpException(
           'Nie znaleziono łowiska!',
@@ -80,6 +80,7 @@ export class ReservationsService {
         );
       }
       const year = this.getYearFromID(id);
+      // const res = await this.findReservationByID(lakeName, id);
       const reservationIndex = lake.reservations[year].findIndex(
         (el) => el.id === id,
       );
@@ -101,6 +102,10 @@ export class ReservationsService {
         resForUpdate,
       );
       lake.reservations[year][reservationIndex] = reservationToUpdate;
+
+      lake = await this.clearUnavailableDates(lakeName, lake, id);
+
+      lake = this.addUnavailableDates(lake, reservationToUpdate, year);
 
       await this.lakeService.updateLake(lake);
 
@@ -516,29 +521,30 @@ export class ReservationsService {
         );
 
       const year = this.getYearFromID(id);
-      const result = await this.getReservationByID(lakeName, id);
+      const res = await this.getReservationByID(lakeName, id);
 
-      const data = result?.data;
+      // const data = result?.data;
       lake.reservations[year] = lake?.reservations[year].filter(
         (el) => el?.id !== id,
       );
 
-      data.forEach(({ dates, spotId }) => {
-        const spotToUpdate = lake?.spots.find((s) => s?.spotId === spotId);
-        if (spotToUpdate && spotToUpdate?.unavailableDates) {
-          Object.keys(spotToUpdate?.unavailableDates).forEach((year) => {
-            lake.spots.find((s) => s?.spotId === spotId).unavailableDates[
-              year
-            ] = spotToUpdate?.unavailableDates[year].filter(
-              (unavailableDate) =>
-                !dates.some(({ date }) => date === unavailableDate),
-            );
-          });
-        }
-      });
+      // data.forEach(({ dates, spotId }) => {
+      //   const spotToUpdate = lake?.spots.find((s) => s?.spotId === spotId);
+      //   if (spotToUpdate && spotToUpdate?.unavailableDates) {
+      //     Object.keys(spotToUpdate?.unavailableDates).forEach((year) => {
+      //       lake.spots.find((s) => s?.spotId === spotId).unavailableDates[
+      //         year
+      //       ] = spotToUpdate?.unavailableDates[year].filter(
+      //         (unavailableDate) =>
+      //           !dates.some(({ date }) => date === unavailableDate),
+      //       );
+      //     });
+      //   }
+      // });
 
-      await this.lakeService.updateLake(lake);
-      return result;
+      const updatedLake = await this.clearUnavailableDates(lakeName, lake, id);
+      await this.lakeService.updateLake(updatedLake);
+      return res;
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -571,6 +577,31 @@ export class ReservationsService {
     }
   }
 
+  private async clearUnavailableDates(
+    lakeName: string,
+    lake: Lake,
+    id: string,
+  ): Promise<Lake> {
+    const result = await this.getReservationByID(lakeName, id);
+
+    const data = result?.data;
+
+    data.forEach(({ dates, spotId }) => {
+      const spotToUpdate = lake?.spots.find((s) => s?.spotId === spotId);
+      if (spotToUpdate && spotToUpdate?.unavailableDates) {
+        Object.keys(spotToUpdate?.unavailableDates).forEach((year) => {
+          lake.spots.find((s) => s?.spotId === spotId).unavailableDates[year] =
+            spotToUpdate?.unavailableDates[year].filter(
+              (unavailableDate) =>
+                !dates.some(({ date }) => date === unavailableDate),
+            );
+        });
+      }
+    });
+
+    return lake;
+  }
+
   private addUnavailableDates(
     lakeForUpdate: Lake,
     reservation: ReservationData,
@@ -590,8 +621,13 @@ export class ReservationsService {
             //   ...lakeForUpdate.spots[j].unavailableDates[year],
             //   reservation.data[i].dates[i].date,
             // ];
+
             reservation.data[i].dates.forEach((d) => {
-              lakeForUpdate.spots[j].unavailableDates[year].push(d.date);
+              if (
+                !lakeForUpdate.spots[j].unavailableDates[year].includes(d.date)
+              ) {
+                lakeForUpdate.spots[j].unavailableDates[year].push(d.date);
+              }
             });
           }
         }
@@ -664,4 +700,44 @@ export class ReservationsService {
 
     return individualReservations;
   }
+
+  // compareObjects(
+  //   newobj1: {
+  //     dates: {
+  //       date: string;
+  //       priceForDate: number;
+  //     }[];
+  //     spotId: string;
+  //   }[],
+  //   oldobj2: {
+  //     dates: {
+  //       date: string;
+  //       priceForDate: number;
+  //     }[];
+  //     spotId: string;
+  //   }[],
+  // ): string {
+
+  //   if (newobj1.length > oldobj2.length) return 'add';
+  //   else if (newobj1.length < oldobj2.length) return 'clear';
+
+  //     for (let i = 0; i < newobj1.length; i++) {
+  //       const dates1 = newobj1[i].dates;
+  //       const dates2 = oldobj2[i].dates;
+
+  //       if (dates1.length > dates2.length) return 'add';
+  //       else if(dates1.length < dates2.length) return 'clear';
+
+  //       for (let j = 0; j < dates1.length; j++) {
+  //         if (dates1[j].date !== dates2[j].date) return 'add';
+
+  //       }
+
+  //       if (newobj1[i].spotId !== oldobj2[i].spotId) {
+  //         return 'both'; // Wartość pola spotId jest różna, obiekty są różne
+  //       }
+  //     }
+
+  //   return 'same'; // Obiekty są identyczne
+  // }
 }
