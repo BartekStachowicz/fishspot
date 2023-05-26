@@ -30,6 +30,18 @@ export class ReservationsService {
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
 
+      const isAvailable: boolean = await this.checkIfDatesAreAvailable(
+        lakeName,
+        year,
+        reservation.data,
+      );
+
+      if (!isAvailable)
+        throw new HttpException(
+          'Wybrane daty są już zajęte!',
+          HttpStatus.NOT_FOUND,
+        );
+
       const encryptedEmail = this.authService.encrypt(reservation.email);
       const encryptedName = this.authService.encrypt(reservation.fullName);
       const encryptedPhone = this.authService.encrypt(reservation.phone);
@@ -106,7 +118,7 @@ export class ReservationsService {
     reservationData: ReservationData,
   ): Promise<ReservationData> {
     try {
-      const lake = await this.lakeService.findByName(lakeName);
+      let lake = await this.lakeService.findByName(lakeName);
       if (!lake) {
         throw new HttpException(
           'Nie znaleziono łowiska!',
@@ -114,6 +126,7 @@ export class ReservationsService {
         );
       }
       const year = this.getYearFromID(id);
+      const reservation = await this.findReservationByID(lakeName, id);
       const reservationIndex = lake.reservations[year].findIndex(
         (el) => el.id === id,
       );
@@ -135,6 +148,14 @@ export class ReservationsService {
         resForUpdate,
       );
       lake.reservations[year][reservationIndex] = reservationToUpdate;
+      const compareData = this.compareObjects(
+        reservation.data,
+        reservationToUpdate.data,
+      );
+      if (!compareData) {
+        lake = this.addUnavailableDates(lake, reservationToUpdate, year);
+      }
+
       await this.lakeService.updateLake(lake);
 
       return {
@@ -324,41 +345,6 @@ export class ReservationsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  private createIndividualReservations(reservationData: ReservationData[]) {
-    const individualReservations = [];
-
-    reservationData.forEach((reservation) => {
-      reservation.data.forEach((spot) => {
-        const individualReservation = {
-          id: reservation.id,
-          fullName: reservation.fullName,
-          phone: reservation.phone,
-          email: reservation.email,
-          data: [
-            {
-              dates: spot.dates,
-              spotId: spot.spotId,
-            },
-          ],
-          timestamp: reservation.timestamp,
-          confirmed: reservation.confirmed,
-          rejected: reservation.rejected,
-          price: reservation.price,
-          fullPaymentMethod: reservation.fullPaymentMethod,
-          fullPaymentStatus: reservation.fullPaymentStatus,
-          depositPrice: reservation.depositPrice,
-          depositSoFar: reservation.depositSoFar,
-          isDepositPaid: reservation.isDepositPaid,
-          isDepositRequired: reservation.isDepositRequired,
-        };
-
-        individualReservations.push(individualReservation);
-      });
-    });
-
-    return individualReservations;
   }
 
   async getTodaysReservations(
@@ -674,38 +660,40 @@ export class ReservationsService {
     }
   }
 
-  // private checkIfDatesAreAvailable(
-  //   spots: Spots[],
-  //   data: { dates: string[]; spotId: string }[],
-  // ): string[] | boolean {
-  //   try {
-  //     const result: string[] = [];
+  private async checkIfDatesAreAvailable(
+    lakeName: string,
+    year: string,
+    data: {
+      dates: {
+        date: string;
+        priceForDate: number;
+      }[];
+      spotId: string;
+    }[],
+  ): Promise<boolean> {
+    try {
+      const result: string[] = [];
 
-  //     let datesToCheck: string[];
+      const spots = (await this.lakeService.findByName(lakeName)).spots;
 
-  //     data.forEach((d) => {
-  //       datesToCheck = [...datesToCheck, ...d.dates];
-  //     });
+      data.forEach((d) => {
+        const spot = spots.find((s) => s.spotId === d.spotId);
+        d.dates.forEach((dd) => {
+          if (spot.unavailableDates[year].includes(dd.date)) {
+            result.push(dd.date);
+          }
+        });
+      });
 
-  //     spots.forEach((spot) => {
-  //       Object.values(spot.unavailableDates).forEach((year) => {
-  //         year.forEach((date) => {
-  //           if (datesToCheck.includes(date)) {
-  //             result.push(date);
-  //           }
-  //         });
-  //       });
-  //     });
-
-  //     return result.length > 0 ? result : true;
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new HttpException(
-  //       'Failed to check dates',
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   }
-  // }
+      return result.length > 0 ? false : true;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Wybrane daty są już zajęte!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   private getYearFromID(id: string): string {
     const timestamp = id.split('.')[1];
@@ -729,5 +717,85 @@ export class ReservationsService {
 
     const id = `${name.toUpperCase()}.${timestamp}.${uuid}`;
     return id;
+  }
+
+  private compareObjects(
+    obj1: {
+      dates: {
+        date: string;
+        priceForDate: number;
+      }[];
+      spotId: string;
+    }[],
+    obj2: {
+      dates: {
+        date: string;
+        priceForDate: number;
+      }[];
+      spotId: string;
+    }[],
+  ) {
+    if (obj1.length !== obj2.length) {
+      return false; // Tablice mają różne długości, obiekty są różne
+    }
+
+    for (let i = 0; i < obj1.length; i++) {
+      const dates1 = obj1[i].dates;
+      const dates2 = obj2[i].dates;
+
+      if (dates1.length !== dates2.length) {
+        return false; // Tablice dates mają różne długości, obiekty są różne
+      }
+
+      for (let j = 0; j < dates1.length; j++) {
+        if (
+          dates1[j].date !== dates2[j].date ||
+          dates1[j].priceForDate !== dates2[j].priceForDate
+        ) {
+          return false; // Wartości pól są różne, obiekty są różne
+        }
+      }
+
+      if (obj1[i].spotId !== obj2[i].spotId) {
+        return false; // Wartość pola spotId jest różna, obiekty są różne
+      }
+    }
+
+    return true; // Obiekty są identyczne
+  }
+
+  private createIndividualReservations(reservationData: ReservationData[]) {
+    const individualReservations = [];
+
+    reservationData.forEach((reservation) => {
+      reservation.data.forEach((spot) => {
+        const individualReservation = {
+          id: reservation.id,
+          fullName: reservation.fullName,
+          phone: reservation.phone,
+          email: reservation.email,
+          data: [
+            {
+              dates: spot.dates,
+              spotId: spot.spotId,
+            },
+          ],
+          timestamp: reservation.timestamp,
+          confirmed: reservation.confirmed,
+          rejected: reservation.rejected,
+          price: reservation.price,
+          fullPaymentMethod: reservation.fullPaymentMethod,
+          fullPaymentStatus: reservation.fullPaymentStatus,
+          depositPrice: reservation.depositPrice,
+          depositSoFar: reservation.depositSoFar,
+          isDepositPaid: reservation.isDepositPaid,
+          isDepositRequired: reservation.isDepositRequired,
+        };
+
+        individualReservations.push(individualReservation);
+      });
+    });
+
+    return individualReservations;
   }
 }
