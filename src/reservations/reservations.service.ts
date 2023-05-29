@@ -6,6 +6,7 @@ import { LakeService } from '../lake/lake.service';
 import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
 import { AuthService } from 'src/auth/auth.service';
+import { Spots } from 'src/spots/spots.model';
 
 @Injectable()
 export class ReservationsService {
@@ -28,6 +29,25 @@ export class ReservationsService {
 
       const year = this.dateConverter(reservation.timestamp);
       const uniqueID = this.buildUniqueID(lakeName, reservation.timestamp);
+
+      const isUnavailable = this.areDatesUnavailable(
+        reservation,
+        lakeForUpdate.spots,
+        year,
+      );
+
+      if (isUnavailable)
+        throw new HttpException(
+          'Wybrany termin jest niedostępny!',
+          HttpStatus.NOT_FOUND,
+        );
+
+      if (
+        !this.validateEmail(reservation.email) ||
+        !this.validateNameLength(reservation.fullName) ||
+        !this.validatePhone(reservation.phone)
+      )
+        throw new HttpException('Błędne dane!', HttpStatus.NOT_FOUND);
 
       const encryptedEmail = this.authService.encrypt(reservation.email);
       const encryptedName = this.authService.encrypt(reservation.fullName);
@@ -72,6 +92,13 @@ export class ReservationsService {
     reservationData: ReservationData,
   ): Promise<ReservationData> {
     try {
+      if (
+        !this.validateEmail(reservationData.email) ||
+        !this.validateNameLength(reservationData.fullName) ||
+        !this.validatePhone(reservationData.phone)
+      )
+        throw new HttpException('Błędne dane!', HttpStatus.NOT_FOUND);
+
       let lake = await this.lakeService.findByName(lakeName);
       if (!lake) {
         throw new HttpException(
@@ -90,6 +117,7 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       }
+
       const resForUpdate = {
         ...reservationData,
         email: this.authService.encrypt(reservationData?.email),
@@ -577,6 +605,29 @@ export class ReservationsService {
     }
   }
 
+  private areDatesUnavailable(
+    reservationData: ReservationData,
+    spots: Spots[],
+    year: string,
+  ): boolean {
+    for (const data of reservationData.data) {
+      const spotId = data.spotId;
+      const spot = spots.find((spot) => spot.spotId === spotId);
+
+      if (spot && spot.unavailableDates[year]) {
+        const unavailableDates = spot.unavailableDates[year];
+
+        for (const dateObj of data.dates) {
+          if (unavailableDates.includes(dateObj.date)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   private async clearUnavailableDates(
     lakeName: string,
     lake: Lake,
@@ -699,6 +750,24 @@ export class ReservationsService {
     });
 
     return individualReservations;
+  }
+
+  private validatePhone(phone: string): boolean {
+    const reg = /^(\+\d{1,3})?\d{9,15}$/;
+    return reg.test(phone);
+  }
+
+  private validateEmail(email: string): boolean {
+    const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return reg.test(email);
+  }
+
+  private validateNameLength(name: string): boolean {
+    const minLength = 1;
+    const maxLength = 40;
+
+    return name.length >= minLength && name.length <= maxLength;
   }
 
   // compareObjects(
