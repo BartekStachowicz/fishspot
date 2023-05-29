@@ -20,18 +20,19 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   @SubscribeMessage('message')
-  handleMessage(
-    @MessageBody() message: { date: string; spotId: string },
+  async handleMessage(
+    @MessageBody() message: { date: string; spotId: string; lakeName: string },
     @ConnectedSocket() client: Socket,
   ) {
     // console.log(`MESSAGE: ${!message ? 'pusta' : 'pełna'}`);
 
     const blockedDates: BlockedDatesInput = {
+      lakeName: message.lakeName,
       clientId: client.id,
       date: message.date,
       spotId: message.spotId,
     };
-    const result = this.webSocketsService.setBlockedDates(
+    const result = await this.webSocketsService.setBlockedDates(
       blockedDates,
       message,
     );

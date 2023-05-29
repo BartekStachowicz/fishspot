@@ -614,6 +614,13 @@ export class ReservationsService {
       const spotId = data.spotId;
       const spot = spots.find((spot) => spot.spotId === spotId);
 
+      if (!spot.unavailableDates) {
+        spot.unavailableDates = {};
+      }
+      if (!spot.unavailableDates[year]) {
+        spot.unavailableDates[year] = [];
+      }
+
       if (spot && spot.unavailableDates[year]) {
         const unavailableDates = spot.unavailableDates[year];
 
