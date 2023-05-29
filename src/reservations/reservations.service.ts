@@ -376,6 +376,7 @@ export class ReservationsService {
       });
 
       reservations = reservations
+        .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
