@@ -36,7 +36,7 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
       blockedDates,
       message,
     );
-    // console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
+    console.log(`Function setBlockedDates returns: ${JSON.stringify(result)}`);
     this.server.emit('message', result);
   }
 

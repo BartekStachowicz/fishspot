@@ -81,9 +81,9 @@ export class WebSocketsService {
           }
         }
       }
-      console.log('pełna');
+      // console.log('pełna');
       const output = this.transformDataForFrontend(allBlockedDates);
-      console.log(JSON.stringify(output));
+      // console.log(JSON.stringify(output));
 
       return output;
     } catch (error) {
