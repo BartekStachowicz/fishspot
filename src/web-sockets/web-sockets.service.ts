@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SpotsService } from 'src/spots/spots.service';
 
 export interface BlockedDatesInput {
-  lakeName: string;
   clientId: string;
   date: string;
   spotId: string;
@@ -41,11 +40,6 @@ export class WebSocketsService {
         return this.transformDataForFrontend(allBlockedDates);
       }
 
-      const spot = await this.spotService.getSpotById(
-        blockedDates.lakeName,
-        blockedDates.spotId,
-      );
-
       const index = allBlockedDates.findIndex(
         (date) => date.clientId === blockedDates.clientId,
       );
@@ -72,10 +66,7 @@ export class WebSocketsService {
         } else {
           const dates = existingDates[existingSpotIndex].dates;
           if (dates.includes(blockedDates.date)) {
-            spot.info.houseSpot &&
-            spot.info.houseSpotPrice.priceForMinimal !== 0
-              ? dates.splice(0, dates.length)
-              : dates.splice(dates.indexOf(blockedDates.date), 1);
+            dates.splice(dates.indexOf(blockedDates.date), 1);
           } else {
             dates.push(blockedDates.date);
           }

@@ -21,13 +21,12 @@ export class DatesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async handleMessage(
-    @MessageBody() message: { date: string; spotId: string; lakeName: string },
+    @MessageBody() message: { date: string; spotId: string },
     @ConnectedSocket() client: Socket,
   ) {
     // console.log(`MESSAGE: ${!message ? 'pusta' : 'pełna'}`);
 
     const blockedDates: BlockedDatesInput = {
-      lakeName: message.lakeName,
       clientId: client.id,
       date: message.date,
       spotId: message.spotId,
