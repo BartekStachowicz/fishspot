@@ -241,7 +241,7 @@ export class ReservationsService {
           HttpStatus.NOT_FOUND,
         );
       const reservations = lake.reservations[year]
-        .filter((reservation) => reservation?.confirmed)
+        // .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
@@ -298,7 +298,7 @@ export class ReservationsService {
       });
 
       const resultReservations = spotsWithReservations
-        .filter((reservation) => reservation?.confirmed)
+        // .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
@@ -376,7 +376,7 @@ export class ReservationsService {
       });
 
       reservations = reservations
-        .filter((reservation) => reservation?.confirmed)
+        // .filter((reservation) => reservation?.confirmed)
         .sort((a, b) => +b.timestamp - +a.timestamp)
         .slice(offset, offset + limit)
         .map((r) => {
@@ -498,43 +498,44 @@ export class ReservationsService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
-  async cleanExpiredReservations() {
-    try {
-      const lakes: Lake[] = await this.lakeService.findAll();
-      if (!lakes)
-        throw new HttpException(
-          'Nie znaleziono łowiska!',
-          HttpStatus.NOT_FOUND,
-        );
-      lakes.forEach((lake) => {
-        Object.values(lake?.reservations).forEach((year) => {
-          year.forEach((reservation) => {
-            const reservationDay = new Date(+reservation?.timestamp * 1000);
-            // console.log(`DATA REZERWACJI ${index}: ${reservationDay}`);
-            const twoDaysLater = new Date(reservationDay.getTime());
-            twoDaysLater.setDate(twoDaysLater.getDate() + 2);
-            // console.log(`DWA DNI PÓŹNIEJ ${index}: ${twoDaysLater}`);
-            if (
-              !reservation?.confirmed &&
-              !reservation?.isDepositPaid &&
-              !reservation?.isDepositRequired
-            ) {
-              if (twoDaysLater < new Date()) {
-                this.deleteReservation(lake?.name, reservation?.id);
-              }
-            }
-          });
-        });
-      });
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Nie można wyczyścić rezerwacji!',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
+  // CZYSZCZENIE REZERWACJI WYŁĄCZONE
+  // @Cron(CronExpression.EVERY_HOUR)
+  // async cleanExpiredReservations() {
+  //   try {
+  //     const lakes: Lake[] = await this.lakeService.findAll();
+  //     if (!lakes)
+  //       throw new HttpException(
+  //         'Nie znaleziono łowiska!',
+  //         HttpStatus.NOT_FOUND,
+  //       );
+  //     lakes.forEach((lake) => {
+  //       Object.values(lake?.reservations).forEach((year) => {
+  //         year.forEach((reservation) => {
+  //           const reservationDay = new Date(+reservation?.timestamp * 1000);
+  //           // console.log(`DATA REZERWACJI ${index}: ${reservationDay}`);
+  //           const twoDaysLater = new Date(reservationDay.getTime());
+  //           twoDaysLater.setDate(twoDaysLater.getDate() + 2);
+  //           // console.log(`DWA DNI PÓŹNIEJ ${index}: ${twoDaysLater}`);
+  //           if (
+  //             !reservation?.confirmed &&
+  //             !reservation?.isDepositPaid &&
+  //             !reservation?.isDepositRequired
+  //           ) {
+  //             if (twoDaysLater < new Date()) {
+  //               this.deleteReservation(lake?.name, reservation?.id);
+  //             }
+  //           }
+  //         });
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new HttpException(
+  //       'Nie można wyczyścić rezerwacji!',
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //     );
+  //   }
+  // }
 
   async deleteReservation(
     lakeName: string,
