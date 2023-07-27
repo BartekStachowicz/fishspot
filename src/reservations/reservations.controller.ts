@@ -214,8 +214,8 @@ export class ReservationsController {
     await this.reservationsService.deleteReservation(lakeName, id);
   }
 
-  @Delete('clear')
-  async cleaner() {
-    await this.reservationsService.cleanExpiredReservations();
-  }
+  // @Delete('clear')
+  // async cleaner() {
+  //   await this.reservationsService.cleanExpiredReservations();
+  // }
 }
