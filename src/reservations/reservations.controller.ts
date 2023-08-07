@@ -14,6 +14,7 @@ import { ReservationsService } from './reservations.service';
 import { ReservationData } from './reservations.model';
 import { JwtGuard } from '../auth/jwt.guard';
 import { MailService } from 'src/mails/mails.service';
+import { CompetitionData } from './competition.model';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -41,6 +42,24 @@ export class ReservationsController {
       lakeName,
     );
     return newReservation;
+  }
+
+  @UseGuards(JwtGuard)
+  @Post(':lakename/competition')
+  async addCompetition(
+    @Param('lakename') lakeName: string,
+    @Body() competition: CompetitionData,
+  ) {
+    await this.reservationsService.createCompetition(lakeName, competition);
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('delete/:lakename/competition/:id')
+  async deleteCompetition(
+    @Param('lakename') lakeName: string,
+    @Param('id') id: string,
+  ) {
+    await this.reservationsService.deleteCompetition(lakeName, id);
   }
 
   @UseGuards(JwtGuard)

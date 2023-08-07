@@ -8,14 +8,15 @@ import {
 import { Lake, LakeOutput } from './lake.model';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-
+import { Request } from 'express';
 import { Spots, SpotsOutput } from '../spots/spots.model';
 import { SpotsService } from 'src/spots/spots.service';
+import { BigFish } from './news.model';
 
 @Injectable()
 export class LakeService {
   constructor(
-    @InjectModel('Lake') private readonly lakeModel: Model<Lake>,
+    @InjectModel('Ocieka') private readonly lakeModel: Model<Lake>,
     @Inject(forwardRef(() => SpotsService))
     private spotsService: SpotsService,
   ) {}
@@ -35,6 +36,29 @@ export class LakeService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async addBigFish(req: Request, lakeName: string) {
+    const lakeForUpdate = await this.findByName(lakeName);
+    if (!lakeForUpdate)
+      throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
+
+    const newBigFish: BigFish = {
+      name: req.body.name,
+      description: req.body.description,
+      weight: req.body.weight,
+      length: req.body.length,
+      date: req.body.date,
+      spot: req.body.spot,
+    };
+
+    if (!lakeForUpdate.bigFish) {
+      lakeForUpdate.bigFish = [];
+    }
+
+    lakeForUpdate.bigFish.push(newBigFish);
+
+    await this.updateLake(lakeForUpdate);
   }
 
   /////// AUTO GENERATE FOR TESTING
@@ -82,6 +106,9 @@ export class LakeService {
       lakeForUpdate.spots = lake?.spots || lakeForUpdate.spots;
       lakeForUpdate.reservations =
         lake?.reservations || lakeForUpdate.reservations;
+      lakeForUpdate.competition =
+        lake?.competition || lakeForUpdate.competition;
+      lakeForUpdate.bigFish = lake?.bigFish || lakeForUpdate.bigFish;
 
       await lakeForUpdate.save();
     } catch (error) {
@@ -109,10 +136,14 @@ export class LakeService {
         options: spot.options,
       }));
 
+      const yearCompetition = lake?.competition[year] || [];
+
       return {
         id: lake._id,
         name: lake.name,
         spots: spotsMaped,
+        competition: yearCompetition,
+        bigFish: lake?.bigFish || [],
       };
     } catch (error) {
       console.log(error);
@@ -122,6 +153,12 @@ export class LakeService {
       );
     }
   }
+
+  // private generateImagePath(filename: string, host: string): string {
+  //   const url = `https://${host}`;
+  //   const path = `${url}/assets/${filename}`;
+  //   return path;
+  // }
 
   async hasUniqueName(name: string): Promise<boolean> {
     const foundLake = await this.findByName(name);

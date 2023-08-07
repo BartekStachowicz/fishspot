@@ -7,6 +7,7 @@ import { ReservationData } from './reservations.model';
 import { Lake } from '../lake/lake.model';
 import { AuthService } from 'src/auth/auth.service';
 import { Spots } from 'src/spots/spots.model';
+import { CompetitionData } from './competition.model';
 
 @Injectable()
 export class ReservationsService {
@@ -84,6 +85,44 @@ export class ReservationsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async createCompetition(lakeName: string, competition: CompetitionData) {
+    const lakeForUpdate = await this.lakeService.findByName(lakeName);
+    if (!lakeForUpdate)
+      throw new HttpException('Nie znaleziono łowiska!', HttpStatus.NOT_FOUND);
+
+    const year = this.dateConverter(competition.timestamp);
+    const uniqueID = this.buildUniqueID(lakeName, competition.timestamp);
+
+    if (!lakeForUpdate.competition) {
+      lakeForUpdate.competition = {};
+    }
+
+    if (!lakeForUpdate.competition[year]) {
+      lakeForUpdate.competition[year] = [];
+    }
+
+    const newCompetition = {
+      ...competition,
+      id: uniqueID,
+    };
+
+    lakeForUpdate.competition[year].push(newCompetition);
+
+    lakeForUpdate.spots.forEach((el) => {
+      if (!el.unavailableDates) {
+        el.unavailableDates = {};
+      }
+
+      if (!el.unavailableDates[year]) {
+        el.unavailableDates[year] = [];
+      }
+
+      el.unavailableDates[year].push(...competition.dates);
+    });
+
+    await this.lakeService.updateLake(lakeForUpdate);
   }
 
   async updateReservation(
@@ -582,6 +621,27 @@ export class ReservationsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async deleteCompetition(lakeName: string, id: string) {
+    const year = this.getYearFromID(id);
+
+    const lake = await this.lakeService.findByName(lakeName);
+    const competition = lake.competition[year].find((el) => el.id === id);
+
+    lake.spots.forEach((spot) => {
+      if (spot.unavailableDates[year]) {
+        spot.unavailableDates[year] = spot.unavailableDates[year].filter(
+          (unavailableDate) => !competition.dates.includes(unavailableDate),
+        );
+      }
+    });
+
+    lake.competition[year] = lake?.competition[year].filter(
+      (el) => el?.id !== id,
+    );
+
+    await this.lakeService.updateLake(lake);
   }
 
   private async findReservationByID(
