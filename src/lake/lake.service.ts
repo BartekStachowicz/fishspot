@@ -45,7 +45,6 @@ export class LakeService {
 
     const newBigFish: BigFish = {
       name: req.body.name,
-      description: req.body.description,
       weight: req.body.weight,
       length: req.body.length,
       date: req.body.date,
