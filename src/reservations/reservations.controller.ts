@@ -152,6 +152,7 @@ export class ReservationsController {
       );
     return reservations;
   }
+
   @UseGuards(JwtGuard)
   @Get('todays/:lakename')
   async getTodaysReservations(
@@ -172,6 +173,27 @@ export class ReservationsController {
     );
     return reservations;
   }
+
+  @UseGuards(JwtGuard)
+  @Get('todays/:lakename')
+  async getTodaysReservationsCombined(
+    @Query('offset') offset: number,
+    @Query('limit') limit: number,
+    @Query('filter') filter: string,
+    @Query('year') year: string,
+    @Query('date') date: string,
+  ): Promise<ReservationData[] | void> {
+    const reservations =
+      await this.reservationsService.getTodaysReservationsCombined(
+        +offset,
+        +limit,
+        filter,
+        year,
+        date,
+      );
+    return reservations;
+  }
+
   @UseGuards(JwtGuard)
   @Get('deposit-paid/:lakename')
   async getReservationsWithPaidDeposit(

@@ -44,7 +44,6 @@ export class ReservationsService {
         );
 
       if (
-        !this.validateEmail(reservation.email) ||
         !this.validateNameLength(reservation.fullName) ||
         !this.validatePhone(reservation.phone)
       )
@@ -132,7 +131,6 @@ export class ReservationsService {
   ): Promise<ReservationData> {
     try {
       if (
-        !this.validateEmail(reservationData.email) ||
         !this.validateNameLength(reservationData.fullName) ||
         !this.validatePhone(reservationData.phone)
       )
@@ -411,6 +409,97 @@ export class ReservationsService {
           ) {
             reservations.push(reservation);
           }
+        });
+      });
+
+      reservations = reservations
+        // .filter((reservation) => reservation?.confirmed)
+        .sort((a, b) => +b.timestamp - +a.timestamp)
+        .slice(offset, offset + limit)
+        .map((r) => {
+          const email = this.authService.decrypt(r?.email);
+          const phone = this.authService.decrypt(r?.phone);
+          const fullName = this.authService.decrypt(r?.fullName);
+          return {
+            ...r,
+            email: email,
+            phone: phone,
+            fullName: fullName,
+          };
+        });
+
+      if (filter === '') return reservations;
+
+      return reservations.filter((el) =>
+        el?.fullName.toLowerCase().includes(filter.toLowerCase()),
+      );
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Nie można pobrać rezerwacji!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getTodaysReservationsCombined(
+    offset: number,
+    limit: number,
+    filter: string,
+    year: string,
+    date: string,
+  ): Promise<ReservationData[] | void> {
+    try {
+      const lake = await this.lakeService.findAll();
+      if (!lake)
+        throw new HttpException(
+          'Nie znaleziono łowiska!',
+          HttpStatus.NOT_FOUND,
+        );
+      const currentYear = this.getCurrentYear();
+      if (year === '') year = currentYear;
+
+      const dateDay = new Date(+date * 1000).getDate();
+      const dateMonth = new Date(+date * 1000).getMonth() + 1;
+      const dateYear = new Date(+date * 1000).getFullYear();
+
+      const splitedResaervation = [];
+
+      for (let i = 0; i < lake.length; i++) {
+        splitedResaervation.push(
+          this.createIndividualReservations(lake[i].reservations[year]),
+        );
+      }
+
+      let reservations = [];
+
+      splitedResaervation.forEach((reservation) => {
+        reservation?.data.forEach((resdata) => {
+          resdata.dates.sort((a, b) => +a.date - +b.date);
+          resdata.dates.forEach((_, index) => {
+            if (
+              index === 0 ||
+              +resdata.dates[index].date - +resdata.dates[index - 1].date >
+                86400
+            ) {
+              const reservationDay = new Date(
+                +resdata.dates[index].date * 1000,
+              ).getDate();
+              const reservationMonth =
+                new Date(+resdata.dates[index].date * 1000).getMonth() + 1;
+              const reservationYear = new Date(
+                +resdata.dates[index].date * 1000,
+              ).getFullYear();
+
+              if (
+                reservationDay === dateDay &&
+                reservationMonth === dateMonth &&
+                reservationYear === dateYear
+              ) {
+                reservations.push(reservation);
+              }
+            }
+          });
         });
       });
 
