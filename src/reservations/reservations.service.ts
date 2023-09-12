@@ -467,7 +467,7 @@ export class ReservationsService {
 
       for (let i = 0; i < lake.length; i++) {
         splitedResaervation.push(
-          this.createIndividualReservations(lake[i].reservations[year]),
+          ...this.createIndividualReservations(lake[i].reservations[year]),
         );
       }
 

@@ -175,7 +175,7 @@ export class ReservationsController {
   }
 
   @UseGuards(JwtGuard)
-  @Get('todays/:lakename')
+  @Get('todaysall')
   async getTodaysReservationsCombined(
     @Query('offset') offset: number,
     @Query('limit') limit: number,
