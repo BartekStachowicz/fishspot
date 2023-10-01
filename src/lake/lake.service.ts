@@ -205,7 +205,8 @@ export class LakeService {
   async backupJSON() {
     try {
       const lake = await this.findAll();
-      await writeFile('ocieka_backup.json', JSON.stringify(lake));
+      const date = new Date(Date.now()).toLocaleString();
+      await writeFile(`ocieka_backup_${date}.json`, JSON.stringify(lake));
     } catch (error) {
       throw new HttpException(
         'Nie można stworzyć JSON!',
