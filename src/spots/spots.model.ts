@@ -59,4 +59,5 @@ export interface SpotOptions {
   isDepositRequire: boolean;
   depositValue: string;
   depositRequiredSince: number;
+  depositTerms: number; //ile dni
 }

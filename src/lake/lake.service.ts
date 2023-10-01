@@ -12,6 +12,8 @@ import { Request } from 'express';
 import { Spots, SpotsOutput } from '../spots/spots.model';
 import { SpotsService } from 'src/spots/spots.service';
 import { BigFish } from './news.model';
+// import { Cron, CronExpression } from '@nestjs/schedule';
+import { writeFile } from 'fs/promises';
 
 @Injectable()
 export class LakeService {
@@ -197,5 +199,18 @@ export class LakeService {
   private dateConverter(timestamp: string) {
     const date: Date = new Date(+timestamp * 1000);
     return String(date.getFullYear());
+  }
+
+  // @Cron(CronExpression.EVERY_HOUR)
+  async backupJSON() {
+    try {
+      const lake = await this.findAll();
+      await writeFile('ocieka_backup.json', JSON.stringify(lake));
+    } catch (error) {
+      throw new HttpException(
+        'Nie można stworzyć JSON!',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -34,7 +34,7 @@ export class SpotsService {
       lake.spots.push(newSpot);
 
       await this.lakeService.updateLake(lake);
-
+      await this.lakeService.backupJSON();
       return id;
     } catch (error) {
       console.log(error);
@@ -70,7 +70,7 @@ export class SpotsService {
       lake.spots.splice(spotIndex, 1, updatedSpot);
 
       await this.lakeService.updateLake(lake);
-
+      await this.lakeService.backupJSON();
       return updatedSpot;
     } catch (error) {
       console.log(error);
@@ -107,6 +107,7 @@ export class SpotsService {
 
       lake.spots = updatedSpots;
       await this.lakeService.updateLake(lake);
+      await this.lakeService.backupJSON();
       return updatedSpots;
     } catch (error) {
       console.log(error);
@@ -128,6 +129,7 @@ export class SpotsService {
       lake.spots.filter((spot) => spot.spotId !== spotId);
 
       await this.lakeService.updateLake(lake);
+      await this.lakeService.backupJSON();
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -230,6 +232,7 @@ export class SpotsService {
           isDepositRequire: false,
           depositValue: '50%',
           depositRequiredSince: 2,
+          depositTerms: 0,
         },
       };
 

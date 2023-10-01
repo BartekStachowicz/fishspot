@@ -2,7 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ReservationData } from '../reservations/reservations.model';
 
-const DOMAIN = process.env.DOMAIN;
+// const DOMAIN = process.env.DOMAIN;
+
+const DOMAIN = 'https://rezerwacje.ocieka.pl/lake/';
 
 export interface MailContent {
   id: string;
@@ -120,7 +122,7 @@ export class MailService {
 
       const config = {
         to: reservationData.email,
-        from: 'fishspot.test@gmail.com',
+        from: 'kontakt@rezerwacje.ocieka.pl',
         subject: subject,
         template: 'fishspot',
         context: { mailContent: mailContent },

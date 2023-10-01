@@ -76,6 +76,7 @@ export class ReservationsService {
         year,
       );
       await this.lakeService.updateLake(updatedLake);
+      await this.lakeService.backupJSON();
       return newReservation;
     } catch (error) {
       console.log(error);
@@ -122,6 +123,7 @@ export class ReservationsService {
     });
 
     await this.lakeService.updateLake(lakeForUpdate);
+    await this.lakeService.backupJSON();
   }
 
   async updateReservation(
@@ -173,7 +175,7 @@ export class ReservationsService {
       lake = this.addUnavailableDates(lake, reservationToUpdate, year);
 
       await this.lakeService.updateLake(lake);
-
+      await this.lakeService.backupJSON();
       return {
         ...reservationToUpdate,
         phone: reservationData.phone,
@@ -702,6 +704,7 @@ export class ReservationsService {
 
       const updatedLake = await this.clearUnavailableDates(lakeName, lake, id);
       await this.lakeService.updateLake(updatedLake);
+      await this.lakeService.backupJSON();
       return res;
     } catch (error) {
       console.log(error);
@@ -731,6 +734,7 @@ export class ReservationsService {
     );
 
     await this.lakeService.updateLake(lake);
+    await this.lakeService.backupJSON();
   }
 
   private async findReservationByID(
